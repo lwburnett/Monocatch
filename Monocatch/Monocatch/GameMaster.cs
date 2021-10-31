@@ -4,12 +4,12 @@ using Microsoft.Xna.Framework.Input;
 
 namespace Monocatch
 {
-    public class Game1 : Game
+    public class GameMaster : Game
     {
         private GraphicsDeviceManager _graphics;
         private SpriteBatch _spriteBatch;
 
-        public Game1()
+        public GameMaster()
         {
             _graphics = new GraphicsDeviceManager(this);
             Content.RootDirectory = "Content";
