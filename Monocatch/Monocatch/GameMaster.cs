@@ -9,11 +9,10 @@ namespace Monocatch
     {
         private GraphicsDeviceManager _graphics;
         private SpriteBatch _spriteBatch;
-        private static GameMaster _sInstance;
 
-        private BasicProjectile _projectile;
+        private ActorBase _projectile;
 
-        private GameMaster()
+        public GameMaster()
         {
             _graphics = new GraphicsDeviceManager(this);
             Content.RootDirectory = "Content";
@@ -31,7 +30,7 @@ namespace Monocatch
         {
             _spriteBatch = new SpriteBatch(GraphicsDevice);
 
-            _projectile = new BasicProjectile(16, Color.Black);
+            _projectile = new BasicProjectile(16, Color.Black, this);
         }
 
         protected override void Update(GameTime gameTime)
@@ -49,15 +48,10 @@ namespace Monocatch
             GraphicsDevice.Clear(Color.CornflowerBlue);
 
             _spriteBatch.Begin();
-            _spriteBatch.Draw(_projectile.Texture, Vector2.Zero, Color.White);
+            _projectile.Draw((tx, vec) => _spriteBatch.Draw(tx, vec, Color.White));
             _spriteBatch.End();
 
             base.Draw(gameTime);
-        }
-
-        public static Game GetOrCreateInstance()
-        {
-            return _sInstance ??= new GameMaster();
         }
     }
 }
