@@ -5,9 +5,9 @@ using Microsoft.Xna.Framework.Graphics;
 
 namespace Monocatch
 {
-    public class BasicProjectile : ActorBase
+    public class BasicProjectile : ProjectileActorBase
     {
-        public BasicProjectile(int iRadius, Color iProjectileColor, GameMaster iGame)
+        public BasicProjectile(int iRadius, Color iProjectileColor, Vector2 iPosition, Vector2 iVelocity, GameMaster iGame)
         {
             Debug.Assert(iRadius > 0);
             Debug.Assert(iProjectileColor != Color.Transparent);
@@ -15,6 +15,8 @@ namespace Monocatch
 
             _radius = iRadius;
             _Color = iProjectileColor;
+            _position = iPosition;
+            _velocity = iVelocity;
             _game = iGame;
 
             var diameter = 2 * iRadius;
@@ -33,19 +35,21 @@ namespace Monocatch
                 }
             }
 
-            Texture = new Texture2D(_game.GraphicsDevice, diameter, diameter);
-            Texture.SetData(colorData);
+            _texture = new Texture2D(_game.GraphicsDevice, diameter, diameter);
+            _texture.SetData(colorData);
         }
-        
-        public Texture2D Texture { get; }
 
+        private readonly Texture2D _texture;
         private readonly int _radius;
         private readonly Color _Color;
         private readonly GameMaster _game;
 
+        private Vector2 _position;
+        private Vector2 _velocity;
+
         public override void Draw(Action<Texture2D, Vector2> iDrawAction)
         {
-            iDrawAction(Texture, Vector2.Zero);
+            iDrawAction(_texture, _position);
         }
     }
 }

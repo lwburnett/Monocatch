@@ -10,7 +10,7 @@ namespace Monocatch
         private GraphicsDeviceManager _graphics;
         private SpriteBatch _spriteBatch;
 
-        private ActorBase _projectile;
+        private ProjectileActorBase _projectile;
 
         public GameMaster()
         {
@@ -30,7 +30,7 @@ namespace Monocatch
         {
             _spriteBatch = new SpriteBatch(GraphicsDevice);
 
-            _projectile = new BasicProjectile(16, Color.Black, this);
+            _projectile = new BasicProjectile(16, Color.White, new Vector2(16, 16), Vector2.Zero, this);
         }
 
         protected override void Update(GameTime gameTime)
@@ -45,7 +45,7 @@ namespace Monocatch
 
         protected override void Draw(GameTime gameTime)
         {
-            GraphicsDevice.Clear(Color.CornflowerBlue);
+            GraphicsDevice.Clear(Color.Black);
 
             _spriteBatch.Begin();
             _projectile.Draw((tx, vec) => _spriteBatch.Draw(tx, vec, Color.White));

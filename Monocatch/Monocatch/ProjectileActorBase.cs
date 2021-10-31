@@ -4,7 +4,7 @@ using Microsoft.Xna.Framework.Graphics;
 
 namespace Monocatch
 {
-    public abstract class ActorBase
+    public abstract class ProjectileActorBase
     {
         public abstract void Draw(Action<Texture2D, Vector2> iDrawAction);
     }
