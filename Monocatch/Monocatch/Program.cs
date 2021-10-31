@@ -7,7 +7,7 @@ namespace Monocatch
         [STAThread]
         private static void Main()
         {
-            using var game = new GameMaster();
+            using var game = GameMaster.GetOrCreateInstance();
             game.Run();
         }
     }

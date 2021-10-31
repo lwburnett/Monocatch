@@ -1,4 +1,5 @@
-﻿using Microsoft.Xna.Framework;
+﻿using System;
+using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 
@@ -8,8 +9,11 @@ namespace Monocatch
     {
         private GraphicsDeviceManager _graphics;
         private SpriteBatch _spriteBatch;
+        private static GameMaster _sInstance;
 
-        public GameMaster()
+        private BasicProjectile _projectile;
+
+        private GameMaster()
         {
             _graphics = new GraphicsDeviceManager(this);
             Content.RootDirectory = "Content";
@@ -27,7 +31,7 @@ namespace Monocatch
         {
             _spriteBatch = new SpriteBatch(GraphicsDevice);
 
-            // TODO: use this.Content to load your game content here
+            _projectile = new BasicProjectile();
         }
 
         protected override void Update(GameTime gameTime)
@@ -44,9 +48,16 @@ namespace Monocatch
         {
             GraphicsDevice.Clear(Color.CornflowerBlue);
 
-            // TODO: Add your drawing code here
+            _spriteBatch.Begin();
+            _spriteBatch.Draw(_projectile.Texture, Vector2.Zero, Color.White);
+            _spriteBatch.End();
 
             base.Draw(gameTime);
+        }
+
+        public static Game GetOrCreateInstance()
+        {
+            return _sInstance ??= new GameMaster();
         }
     }
 }
