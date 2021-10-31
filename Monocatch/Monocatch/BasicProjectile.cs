@@ -7,14 +7,14 @@ namespace Monocatch
 {
     public class BasicProjectile : ProjectileActorBase
     {
-        public BasicProjectile(int iRadius, Color iProjectileColor, Vector2 iPosition, Vector2 iVelocity, GameMaster iGame)
+        public BasicProjectile(int iRadius, Color iProjectileColor, Vector2 iPosition, Vector2 iVelocity, GameMaster iGame) : base(iGame)
         {
             Debug.Assert(iRadius > 0);
             Debug.Assert(iProjectileColor != Color.Transparent);
             Debug.Assert(iGame != null);
 
             _radius = iRadius;
-            _Color = iProjectileColor;
+            _color = iProjectileColor;
             _position = iPosition;
             _velocity = iVelocity;
             _game = iGame;
@@ -31,7 +31,7 @@ namespace Monocatch
                     var distanceFromCenter = new Vector2(xx - _radius, yy - _radius);
 
                     colorData[thisIndex] = Math.Abs(distanceFromCenter.Length()) < _radius ?
-                        _Color : Color.Transparent;
+                        _color : Color.Transparent;
                 }
             }
 
@@ -41,11 +41,8 @@ namespace Monocatch
 
         private readonly Texture2D _texture;
         private readonly int _radius;
-        private readonly Color _Color;
+        private readonly Color _color;
         private readonly GameMaster _game;
-
-        private Vector2 _position;
-        private Vector2 _velocity;
 
         public override void Draw(Action<Texture2D, Vector2> iDrawAction)
         {

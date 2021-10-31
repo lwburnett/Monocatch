@@ -30,7 +30,7 @@ namespace Monocatch
         {
             _spriteBatch = new SpriteBatch(GraphicsDevice);
 
-            _projectile = new BasicProjectile(16, Color.White, new Vector2(16, 16), Vector2.Zero, this);
+            _projectile = new BasicProjectile(16, Color.White, new Vector2(16, 16), new Vector2(20,0), this);
         }
 
         protected override void Update(GameTime gameTime)
@@ -39,6 +39,7 @@ namespace Monocatch
                 Exit();
 
             // TODO: Add your update logic here
+            _projectile.Update(gameTime);
 
             base.Update(gameTime);
         }
