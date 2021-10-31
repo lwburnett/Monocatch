@@ -5,9 +5,9 @@ using Microsoft.Xna.Framework.Graphics;
 
 namespace Monocatch
 {
-    public class BasicProjectile : ProjectileActorBase
+    public class BasicProjectileActor : ProjectileActorBase
     {
-        public BasicProjectile(int iRadius, Color iProjectileColor, Vector2 iPosition, Vector2 iVelocity, GameMaster iGame) : base(iGame)
+        public BasicProjectileActor(int iRadius, Color iProjectileColor, Vector2 iPosition, Vector2 iVelocity, GameMaster iGame) : base(iGame)
         {
             Debug.Assert(iRadius > 0);
             Debug.Assert(iProjectileColor != Color.Transparent);

@@ -7,22 +7,27 @@ namespace Monocatch
 {
     public class GameMaster : Game
     {
-        private GraphicsDeviceManager _graphics;
+        private readonly GraphicsDeviceManager _graphics;
         private SpriteBatch _spriteBatch;
 
         private ProjectileActorBase _projectile;
+        private WallActor _leftWall;
+        private WallActor _rightWall;
+
 
         public GameMaster()
         {
             _graphics = new GraphicsDeviceManager(this);
-            _graphics.IsFullScreen = true;
             Content.RootDirectory = "Content";
             IsMouseVisible = true;
         }
 
         protected override void Initialize()
         {
-            // TODO: Add your initialization logic here
+            _graphics.PreferredBackBufferHeight = GraphicsDevice.DisplayMode.Height;
+            _graphics.PreferredBackBufferWidth = GraphicsDevice.DisplayMode.Width;
+            _graphics.IsFullScreen = true;
+            _graphics.ApplyChanges();
 
             base.Initialize();
         }
@@ -31,7 +36,16 @@ namespace Monocatch
         {
             _spriteBatch = new SpriteBatch(GraphicsDevice);
 
-            _projectile = new BasicProjectile(16, Color.White, new Vector2(16, 16), new Vector2(20,0), this);
+            var windowHeight = Window.ClientBounds.Height;
+            var windowWidth = Window.ClientBounds.Width;
+
+            var chosenWidth = (int)(windowHeight * 9.0f / 16.0f);
+
+            var topLeftPlayAreaX = (int)((windowWidth / 2.0f) - (chosenWidth / 2.0f));
+
+            _projectile = new BasicProjectileActor(16, Color.White, new Vector2(topLeftPlayAreaX, 16), new Vector2(20,0), this);
+            _leftWall = new WallActor(new Point(topLeftPlayAreaX, 0), new Point(topLeftPlayAreaX + 8, windowWidth), Color.LightSlateGray, this);
+            _rightWall = new WallActor(new Point(topLeftPlayAreaX + chosenWidth - 8, 0), new Point(topLeftPlayAreaX + chosenWidth, windowWidth), Color.LightSlateGray, this);
         }
 
         protected override void Update(GameTime gameTime)
@@ -47,10 +61,14 @@ namespace Monocatch
 
         protected override void Draw(GameTime gameTime)
         {
+            void DrawAction(Texture2D tx, Vector2 vec) => _spriteBatch.Draw(tx, vec, Color.White);
+
             GraphicsDevice.Clear(Color.Black);
 
             _spriteBatch.Begin();
-            _projectile.Draw((tx, vec) => _spriteBatch.Draw(tx, vec, Color.White));
+            _projectile.Draw(DrawAction);
+            _leftWall.Draw(DrawAction);
+            _rightWall.Draw(DrawAction);
             _spriteBatch.End();
 
             base.Draw(gameTime);

@@ -4,7 +4,7 @@ using Microsoft.Xna.Framework.Graphics;
 
 namespace Monocatch
 {
-    public abstract class ProjectileActorBase
+    public abstract class ProjectileActorBase : ActorBase
     {
         protected ProjectileActorBase(GameMaster iGame)
         {
@@ -20,9 +20,7 @@ namespace Monocatch
         private const float _cMass = 1.0f;
         protected Vector2 _position;
         protected Vector2 _velocity;
-
-        public abstract void Draw(Action<Texture2D, Vector2> iDrawAction);
-
+        
         public void Update(GameTime gameTime)
         {
             var elapsedTimeSeconds = (float)gameTime.ElapsedGameTime.TotalSeconds;
