@@ -6,32 +6,16 @@ namespace Monocatch
 {
     public abstract class ProjectileActorBase : ActorBase
     {
-        protected ProjectileActorBase(GameMaster iGame)
+        protected ProjectileActorBase(Vector2 iPosition, Vector2 iVelocity, float iMass, GameMaster iGame) : 
+            base(iPosition, iVelocity, iMass, iGame)
         {
-            _game = iGame;
-            _position = Vector2.Zero;
-            _velocity = Vector2.Zero;
         }
-
-
-        private readonly GameMaster _game;
-        private const float _cGravityMag = 100f;
-
-        private const float _cMass = 1.0f;
-        protected Vector2 _position;
-        protected Vector2 _velocity;
         
-        public void Update(GameTime gameTime)
+        private const float _cGravityMag = 100f;
+        
+        protected  sealed override void vUpdate(GameTime gameTime)
         {
-            var elapsedTimeSeconds = (float)gameTime.ElapsedGameTime.TotalSeconds;
-
-            var positionFinalX = _velocity.X * elapsedTimeSeconds + _position.X;
-            var positionFinalY = (_cGravityMag * elapsedTimeSeconds * elapsedTimeSeconds / _cMass) + (_velocity.Y * elapsedTimeSeconds) + _position.Y;
-
-            var velocityFinalY = (_cGravityMag * elapsedTimeSeconds / _cMass) + _velocity.Y;
-
-            _position = new Vector2(positionFinalX, positionFinalY);
-            _velocity = new Vector2(_velocity.X, velocityFinalY);
+            AddForce(new Vector2(0.0f, _cGravityMag));
         }
     }
 }

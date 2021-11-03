@@ -7,7 +7,7 @@ namespace Monocatch
 {
     public class BasicProjectileActor : ProjectileActorBase
     {
-        public BasicProjectileActor(int iRadius, Color iProjectileColor, Vector2 iPosition, Vector2 iVelocity, GameMaster iGame) : base(iGame)
+        public BasicProjectileActor(int iRadius, Color iProjectileColor, Vector2 iPosition, Vector2 iVelocity, GameMaster iGame) : base(iPosition, iVelocity, 1.0f, iGame)
         {
             Debug.Assert(iRadius > 0);
             Debug.Assert(iProjectileColor != Color.Transparent);
@@ -15,8 +15,6 @@ namespace Monocatch
 
             _radius = iRadius;
             _color = iProjectileColor;
-            _position = iPosition;
-            _velocity = iVelocity;
             _game = iGame;
 
             var diameter = 2 * iRadius;
@@ -44,9 +42,6 @@ namespace Monocatch
         private readonly Color _color;
         private readonly GameMaster _game;
 
-        public override void Draw(Action<Texture2D, Vector2> iDrawAction)
-        {
-            iDrawAction(_texture, _position);
-        }
+        protected sealed override Texture2D GetTexture() => _texture;
     }
 }

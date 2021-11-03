@@ -1,5 +1,4 @@
-﻿using System;
-using Microsoft.Xna.Framework;
+﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 
@@ -11,9 +10,9 @@ namespace Monocatch
         private SpriteBatch _spriteBatch;
 
         private ProjectileActorBase _projectile;
-        private WallActor _leftWall;
-        private WallActor _rightWall;
-
+        private ActorBase _leftWall;
+        private ActorBase _rightWall;
+        private ActorBase _player;
 
         public GameMaster()
         {
@@ -46,6 +45,12 @@ namespace Monocatch
             _projectile = new BasicProjectileActor(16, Color.White, new Vector2(topLeftPlayAreaX, 16), new Vector2(20,0), this);
             _leftWall = new WallActor(new Point(topLeftPlayAreaX, 0), new Point(topLeftPlayAreaX + 8, windowWidth), Color.LightSlateGray, this);
             _rightWall = new WallActor(new Point(topLeftPlayAreaX + chosenWidth - 8, 0), new Point(topLeftPlayAreaX + chosenWidth, windowWidth), Color.LightSlateGray, this);
+
+            var playerWidth = (int)(chosenWidth / 10.0f);
+            var playerHeight = (int)(windowHeight / 64.0f);
+            var playerTopLeftX = (int)(windowWidth / 2.0f - playerWidth / 2.0f);
+            var playerTopLeftY = (int)(windowHeight * .8f - playerHeight / 2.0f);
+            _player = new PlayerActor(new Point(playerTopLeftX, playerTopLeftY), playerWidth, playerHeight, Color.LightSlateGray, this);
         }
 
         protected override void Update(GameTime gameTime)
@@ -69,6 +74,7 @@ namespace Monocatch
             _projectile.Draw(DrawAction);
             _leftWall.Draw(DrawAction);
             _rightWall.Draw(DrawAction);
+            _player.Draw(DrawAction);
             _spriteBatch.End();
 
             base.Draw(gameTime);
