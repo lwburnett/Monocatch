@@ -1,5 +1,6 @@
 ﻿using System;
-using System.Numerics;
+using System.Collections.Generic;
+using System.Linq;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Vector2 = Microsoft.Xna.Framework.Vector2;
@@ -14,11 +15,14 @@ namespace Monocatch
             _velocity = iVelocity;
             _mass = iMass;
             _thisFrameForce = new FrameForce();
+            _components = new List<ActorComponentBase>();
         }
 
         public virtual void Update(GameTime iGameTime)
         {
             vUpdate(iGameTime);
+            foreach (var component in _components) 
+                component.Update(iGameTime);
 
             var elapsedTimeSeconds = (float)iGameTime.ElapsedGameTime.TotalSeconds;
 
@@ -39,18 +43,36 @@ namespace Monocatch
             iDrawAction(GetTexture(), _position);
         }
 
+        public void RegisterComponent(ActorComponentBase ioComponent)
+        {
+            ioComponent.RegisterOwner(this);
+            _components.Add(ioComponent);
+        }
+
+        public T GetComponentByType<T>() where T : ActorComponentBase
+        {
+            return _components.FirstOrDefault(c => c is T) as T;
+        }
+
+        public void AddForce(Vector2 iForce)
+        {
+            _thisFrameForce.Add(iForce);
+        }
+
+        public Vector2 GetActorVelocity() => _velocity;
+
+        public float GetActorMass() => _mass;
+
         private Vector2 _position;
         private Vector2 _velocity;
-        private float _mass;
-        private FrameForce _thisFrameForce;
+        private readonly float _mass;
+        private readonly FrameForce _thisFrameForce;
+        private readonly List<ActorComponentBase> _components;
 
         protected abstract Texture2D GetTexture();
         protected virtual void vUpdate(GameTime iGameTime) {}
 
-        protected void AddForce(Vector2 iForce)
-        {
-            _thisFrameForce.Add(iForce);
-        }
+        #region FrameForce Class
 
         private class FrameForce
         {
@@ -71,5 +93,7 @@ namespace Monocatch
 
             public Vector2 SummedForce { get; private set; }
         }
+
+        #endregion
     }
 }

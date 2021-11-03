@@ -1,4 +1,5 @@
-﻿using Microsoft.Xna.Framework;
+﻿using System.Diagnostics;
+using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 
@@ -46,20 +47,16 @@ namespace Monocatch
             _leftWall = new WallActor(new Point(topLeftPlayAreaX, 0), new Point(topLeftPlayAreaX + 8, windowWidth), Color.LightSlateGray, this);
             _rightWall = new WallActor(new Point(topLeftPlayAreaX + chosenWidth - 8, 0), new Point(topLeftPlayAreaX + chosenWidth, windowWidth), Color.LightSlateGray, this);
 
-            var playerWidth = (int)(chosenWidth / 10.0f);
-            var playerHeight = (int)(windowHeight / 64.0f);
-            var playerTopLeftX = (int)(windowWidth / 2.0f - playerWidth / 2.0f);
-            var playerTopLeftY = (int)(windowHeight * .8f - playerHeight / 2.0f);
-            _player = new PlayerActor(new Point(playerTopLeftX, playerTopLeftY), playerWidth, playerHeight, Color.LightSlateGray, this);
+            LoadPlayer(chosenWidth, windowHeight, windowWidth);
         }
 
         protected override void Update(GameTime gameTime)
         {
-            if (GamePad.GetState(PlayerIndex.One).Buttons.Back == ButtonState.Pressed || Keyboard.GetState().IsKeyDown(Keys.Escape))
-                Exit();
+            HandleInput();
 
             // TODO: Add your update logic here
             _projectile.Update(gameTime);
+            _player.Update(gameTime);
 
             base.Update(gameTime);
         }
@@ -78,6 +75,57 @@ namespace Monocatch
             _spriteBatch.End();
 
             base.Draw(gameTime);
+        }
+
+        // Using this in place of a player controller because of this game's simplicity
+        private void HandleInput()
+        {
+            if (GamePad.GetState(PlayerIndex.One).Buttons.Back == ButtonState.Pressed || Keyboard.GetState().IsKeyDown(Keys.Escape))
+                Exit();
+
+            var playerMovementComponent = _player.GetComponentByType<PlayerMovementComponent>();
+
+            Debug.Assert(playerMovementComponent != null);
+            
+            var isLeftDown = Keyboard.GetState().IsKeyDown(Keys.Left);
+            var isRightDown = Keyboard.GetState().IsKeyDown(Keys.Right);
+
+            if (!isLeftDown && !isRightDown)
+            {
+                playerMovementComponent.IntendNoneAction();
+                return;
+            }
+
+            if (isLeftDown && isRightDown)
+            {
+                playerMovementComponent.IntendBothAction();
+                return;
+            }
+
+            if (isLeftDown)
+            {
+                playerMovementComponent.IntendLeftAction();
+                return;
+            }
+
+            playerMovementComponent.IntendRightAction();
+        }
+
+        private void LoadPlayer(int chosenWidth, int windowHeight, int windowWidth)
+        {
+            var playerWidth = (int)(chosenWidth / 10.0f);
+            var playerHeight = (int)(windowHeight / 64.0f);
+            var playerTopLeftX = (int)(windowWidth / 2.0f - playerWidth / 2.0f);
+            var playerTopLeftY = (int)(windowHeight * .75f - playerHeight / 2.0f);
+            _player = new PlayerActor(
+                new Point(playerTopLeftX, playerTopLeftY),
+                playerWidth,
+                playerHeight,
+                Color.LightCoral,
+                this);
+
+            var playerMovementComponent = new PlayerMovementComponent();
+            _player.RegisterComponent(playerMovementComponent);
         }
     }
 }
