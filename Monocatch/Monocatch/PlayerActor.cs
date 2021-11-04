@@ -30,5 +30,15 @@ namespace Monocatch
         private readonly Texture2D _texture;
 
         protected override Texture2D GetTexture() => _texture;
+
+        public override void OnCollision(ActorBase iOtherActor)
+        {
+            if (iOtherActor is WallActor)
+            {
+                SetActorVelocity(new Vector2(-1.05f * GetActorVelocity().X, GetActorVelocity().Y));
+            }
+
+            base.OnCollision(iOtherActor);
+        }
     }
 }

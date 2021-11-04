@@ -69,13 +69,23 @@ namespace Monocatch
         // What happens if current velocity is greater than top speed?
         private static Vector2 GetMovementForce(Vector2 iCurrentVelocity, Vector2 iMovementForce, float iMass, GameTime iGameTime)
         {
-            var movementForceDirection = iMovementForce;
-            movementForceDirection.Normalize();
-            var forceToTopSpeedThisTick = (CTopHorizontalSpeed * movementForceDirection - iCurrentVelocity) * iMass / (float)iGameTime.ElapsedGameTime.TotalSeconds;
+            if (iCurrentVelocity.Length() < CTopHorizontalSpeed)
+            {
+                var movementForceDirection = iMovementForce;
+                movementForceDirection.Normalize();
+                var forceToTopSpeedThisTick = (CTopHorizontalSpeed * movementForceDirection - iCurrentVelocity) * iMass / (float)iGameTime.ElapsedGameTime.TotalSeconds;
 
-            return (Math.Abs(iMovementForce.Length()) < Math.Abs(forceToTopSpeedThisTick.Length())) ?
-                iMovementForce :
-                forceToTopSpeedThisTick;
+                return (Math.Abs(iMovementForce.Length()) < Math.Abs(forceToTopSpeedThisTick.Length())) ?
+                    iMovementForce :
+                    forceToTopSpeedThisTick;
+            }
+            else
+            {
+                var potentialFinalVelocity = iMovementForce * (float)iGameTime.ElapsedGameTime.TotalSeconds / iMass + iCurrentVelocity;
+                var potentialSpeed = potentialFinalVelocity.Length();
+
+                return potentialSpeed < iCurrentVelocity.Length() ? iMovementForce : Vector2.Zero;
+            }
         }
 
         private static Vector2 GetStoppingForce(Vector2 iCurrentVelocity, float iStoppingForceMag)

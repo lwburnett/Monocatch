@@ -70,7 +70,7 @@ namespace Monocatch
             _thisFrameForce.Add(iForce);
         }
         
-        public virtual void OnCollision(ActorBase actor2) { }
+        public virtual void OnCollision(ActorBase iOtherActor) { }
 
         public Vector2 GetActorPosition() => _position;
 
