@@ -13,7 +13,7 @@ namespace Monocatch
             _bottomBound = iBottomBound;
             _leftXBound = iLeftBound;
             _rightXBound = iRightBound;
-            _maxSpawningXSpeed = 10.0f;
+            _maxSpawningXSpeed = 100.0f;
             _game = iGame;
             _lastSpawn = TimeSpan.Zero;
             _spawnIntervalSeconds = TimeSpan.FromSeconds(2);
@@ -36,8 +36,11 @@ namespace Monocatch
             {
                 var thisProjectile = _activeProjectiles[ii];
 
-                if (thisProjectile.GetActorPosition().Y > _bottomBound)
+                if (thisProjectile.IsCaught || thisProjectile.GetActorPosition().Y > _bottomBound)
+                {
                     _activeProjectiles.RemoveAt(ii);
+                    _game.UnregisterCollidableActor(thisProjectile);
+                }
                 else
                 {
                     thisProjectile.Update(iGameTime);
@@ -66,7 +69,7 @@ namespace Monocatch
         private ProjectileActorBase GetNewProjectile()
         {
             const int projectileRadius = 8;
-            var spawningPositionX = _rng.Next(_leftXBound + projectileRadius, _rightXBound - projectileRadius);
+            var spawningPositionX = _rng.Next(_leftXBound + projectileRadius, _rightXBound - projectileRadius - projectileRadius - projectileRadius);
 
             var spawningSpeedX = (int)((_maxSpawningXSpeed) * (-1.0f + 2.0f * _rng.NextDouble()));
 

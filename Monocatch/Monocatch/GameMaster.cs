@@ -1,5 +1,4 @@
-﻿using System;
-using System.Diagnostics;
+﻿using System.Diagnostics;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
@@ -10,11 +9,11 @@ namespace Monocatch
     {
         private readonly GraphicsDeviceManager _graphics;
         private SpriteBatch _spriteBatch;
-
-        //private ProjectileActorBase _projectile;
+        
         private ActorBase _leftWall;
         private ActorBase _rightWall;
         private ProjectileManager _projectileManager;
+        private CollisionManager _collisionManager;
         private ActorBase _player;
 
         public GameMaster()
@@ -22,6 +21,16 @@ namespace Monocatch
             _graphics = new GraphicsDeviceManager(this);
             Content.RootDirectory = "Content";
             IsMouseVisible = true;
+        }
+
+        public void RegisterCollidableActor(ActorBase iActor)
+        {
+            _collisionManager.Register(iActor);
+        }
+
+        public void UnregisterCollidableActor(ActorBase iActor)
+        {
+            _collisionManager.Unregister(iActor);
         }
 
         protected override void Initialize()
@@ -37,6 +46,7 @@ namespace Monocatch
         protected override void LoadContent()
         {
             _spriteBatch = new SpriteBatch(GraphicsDevice);
+            _collisionManager = new CollisionManager();
 
             var windowHeight = Window.ClientBounds.Height;
             var windowWidth = Window.ClientBounds.Width;
@@ -44,8 +54,6 @@ namespace Monocatch
             var chosenWidth = (int)(windowHeight * 9.0f / 16.0f);
 
             var topLeftScreenAreaX = (int)((windowWidth / 2.0f) - (chosenWidth / 2.0f));
-
-            //_projectile = new BasicProjectileActor(8, Color.White, new Vector2(topLeftPlayAreaX, 16), new Vector2(20,0), this);
 
             const int wallWidth = 8;
             var playAreaLeft = topLeftScreenAreaX + wallWidth;
@@ -61,7 +69,7 @@ namespace Monocatch
         {
             HandleInput();
 
-            // TODO: Add your update logic here
+            _collisionManager.Update(gameTime);
             _projectileManager.Update(gameTime);
             _player.Update(gameTime);
 
@@ -125,7 +133,7 @@ namespace Monocatch
             var playerTopLeftX = (int)(windowWidth / 2.0f - playerWidth / 2.0f);
             var playerTopLeftY = (int)(windowHeight * .75f - playerHeight / 2.0f);
             _player = new PlayerActor(
-                new Point(playerTopLeftX, playerTopLeftY),
+                new Vector2(playerTopLeftX, playerTopLeftY),
                 playerWidth,
                 playerHeight,
                 Color.LightCoral,

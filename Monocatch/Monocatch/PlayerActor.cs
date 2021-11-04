@@ -7,7 +7,8 @@ namespace Monocatch
 {
     public class PlayerActor : ActorBase
     {
-        public PlayerActor(Point iPosition, int iPlayerWidth, int iPlayerHeight, Color iFillColor, GameMaster iGame) : base(iPosition.ToVector2(), Vector2.Zero, 1.0f, iGame)
+        public PlayerActor(Vector2 iPosition, int iPlayerWidth, int iPlayerHeight, Color iFillColor, GameMaster iGame) : 
+            base(iPosition, Vector2.Zero, 1.0f, true, iGame)
         {
             Debug.Assert(iPlayerWidth > 0);
             Debug.Assert(iPlayerHeight > 0);
@@ -23,6 +24,7 @@ namespace Monocatch
 
             _texture = new Texture2D(iGame.GraphicsDevice, iPlayerWidth, iPlayerHeight);
             _texture.SetData(colorData);
+            SetCollider(new BoxCollider(iPosition, new Vector2(iPosition.X + iPlayerWidth, iPosition.Y + iPlayerHeight)));
         }
 
         private readonly Texture2D _texture;

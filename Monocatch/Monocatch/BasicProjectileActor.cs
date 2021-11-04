@@ -7,7 +7,8 @@ namespace Monocatch
 {
     public class BasicProjectileActor : ProjectileActorBase
     {
-        public BasicProjectileActor(int iRadius, Color iProjectileColor, Vector2 iPosition, Vector2 iVelocity, GameMaster iGame) : base(iPosition, iVelocity, 1.0f, iGame)
+        public BasicProjectileActor(int iRadius, Color iProjectileColor, Vector2 iPosition, Vector2 iVelocity, GameMaster iGame) : 
+            base(iPosition, iVelocity, 1.0f, iGame)
         {
             Debug.Assert(iRadius > 0);
             Debug.Assert(iProjectileColor != Color.Transparent);
@@ -35,6 +36,7 @@ namespace Monocatch
 
             _texture = new Texture2D(_game.GraphicsDevice, diameter, diameter);
             _texture.SetData(colorData);
+            SetCollider(new CircleCollider(new Vector2(iPosition.X + _radius,iPosition.Y + _radius), _radius));
         }
 
         private readonly Texture2D _texture;
@@ -43,5 +45,20 @@ namespace Monocatch
         private readonly GameMaster _game;
 
         protected sealed override Texture2D GetTexture() => _texture;
+
+        public override void OnCollision(ActorBase iOtherActor)
+        {
+            if (iOtherActor is PlayerActor)
+            {
+                IsCaught = true;
+            }
+            else if (iOtherActor is WallActor)
+            {
+                var currentVelocity = GetActorVelocity();
+                SetActorVelocity(new Vector2(-1.0f * currentVelocity.X, currentVelocity.Y));
+            }
+
+            base.OnCollision(iOtherActor);
+        }
     }
 }

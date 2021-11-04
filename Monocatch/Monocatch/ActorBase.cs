@@ -9,13 +9,18 @@ namespace Monocatch
 {
     public abstract class ActorBase
     {
-        protected ActorBase(Vector2 iPosition, Vector2 iVelocity, float iMass, GameMaster iGame)
+        protected ActorBase(Vector2 iPosition, Vector2 iVelocity, float iMass, bool iIsCollidable, GameMaster iGame)
         {
             _position = iPosition;
             _velocity = iVelocity;
             _mass = iMass;
             _thisFrameForce = new FrameForce();
             _components = new List<ActorComponentBase>();
+            _collider = null;
+            _isCollidable = iIsCollidable;
+
+            if (_isCollidable)
+                iGame.RegisterCollidableActor(this);
         }
 
         public virtual void Update(GameTime iGameTime)
@@ -34,6 +39,9 @@ namespace Monocatch
 
             _position = new Vector2(positionFinalX, positionFinalY);
             _velocity = new Vector2(velocityFinalX, velocityFinalY);
+
+            if (_isCollidable)
+                _collider.SetPosition(_position);
 
             _thisFrameForce.Reset();
         }
@@ -58,20 +66,38 @@ namespace Monocatch
         {
             _thisFrameForce.Add(iForce);
         }
+        
+        public virtual void OnCollision(ActorBase actor2) { }
 
         public Vector2 GetActorPosition() => _position;
 
         public Vector2 GetActorVelocity() => _velocity;
 
+        protected void SetActorVelocity(Vector2 iNewVelocity)
+        {
+            _velocity = iNewVelocity;
+        }
+
         public float GetActorMass() => _mass;
+
+        public ColliderBase GetCollider() => _collider;
+
+        protected void SetCollider(ColliderBase iCollider)
+        {
+            _collider = iCollider;
+        }
 
         private Vector2 _position;
         private Vector2 _velocity;
         private readonly float _mass;
         private readonly FrameForce _thisFrameForce;
         private readonly List<ActorComponentBase> _components;
+        private ColliderBase _collider;
+        private bool _isCollidable;
 
         protected abstract Texture2D GetTexture();
+
+        // ReSharper disable once InconsistentNaming
         protected virtual void vUpdate(GameTime iGameTime) {}
 
         #region FrameForce Class

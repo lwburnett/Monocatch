@@ -7,7 +7,8 @@ namespace Monocatch
 {
     public class WallActor : ActorBase
     {
-        public WallActor(Point iTopLeft, Point iBottomRight, Color iFillColor, GameMaster iGame) : base(iTopLeft.ToVector2(), Vector2.Zero, 1.0f, iGame)
+        public WallActor(Point iTopLeft, Point iBottomRight, Color iFillColor, GameMaster iGame) : 
+            base(iTopLeft.ToVector2(), Vector2.Zero, 1.0f, true, iGame)
         {
             Debug.Assert(iTopLeft.X < iBottomRight.X);
             Debug.Assert(iTopLeft.Y < iBottomRight.Y);
@@ -25,6 +26,7 @@ namespace Monocatch
 
             _texture = new Texture2D(iGame.GraphicsDevice, width, height);
             _texture.SetData(colorData);
+            SetCollider(new BoxCollider(iTopLeft.ToVector2(), iBottomRight.ToVector2()));
         }
 
         private readonly Texture2D _texture;
