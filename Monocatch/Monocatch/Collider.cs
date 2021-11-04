@@ -62,14 +62,14 @@ namespace Monocatch
         public override void DrawDebug(Action<Texture2D, Vector2> iDrawAction, Game iGame)
         {
             var colorData = new Color[(int)Width * (int)Height];
-            for (var ii = 0; ii < (int)Height; ii++)
+            for (var xx = 0; xx < (int)Height; xx++)
             {
-                for (var jj = 0; jj < (int)Width; jj++)
+                for (var yy = 0; yy < (int)Width; yy++)
                 {
-                    var redOutlineWidth = 2;
+                    const int redOutlineWidth = 2;
 
-                    if (ii < redOutlineWidth|| jj < redOutlineWidth || jj > (int)Width - redOutlineWidth - 1 || ii > (int)Height - redOutlineWidth - 1)
-                        colorData[(ii * ((int)Width)) + jj] = Color.Red;
+                    if (xx < redOutlineWidth|| yy < redOutlineWidth || yy > (int)Width - redOutlineWidth - 1 || xx > (int)Height - redOutlineWidth - 1)
+                        colorData[(xx * ((int)Width)) + yy] = Color.Red;
                 }
             }
 
@@ -97,6 +97,30 @@ namespace Monocatch
 
         public override void DrawDebug(Action<Texture2D, Vector2> iDrawAction, Game iGame)
         {
+            var diameter = 2 * Radius;
+
+            var colorData = new Color[(int)(diameter * diameter)];
+
+            for (var xx = 0; xx < diameter; xx++)
+            {
+                for (var yy = 0; yy < diameter; yy++)
+                {
+                    var thisIndex = xx * (int)diameter + yy;
+                    var distanceFromCenter = new Vector2(xx - Radius, yy - Radius);
+
+                    const int redOutlineWidth = 2;
+                    if (Math.Abs(distanceFromCenter.Length()) < Radius &&
+                        Math.Abs(distanceFromCenter.Length()) > Radius - redOutlineWidth)
+                        colorData[thisIndex] = Color.Red;
+                    else
+                        colorData[thisIndex] = Color.Transparent;
+                }
+            }
+
+            var texture = new Texture2D(iGame.GraphicsDevice, (int)diameter, (int)diameter);
+            texture.SetData(colorData);
+
+            iDrawAction(texture, new Vector2(Center.X - Radius, Center.Y - Radius));
         }
     }
 }

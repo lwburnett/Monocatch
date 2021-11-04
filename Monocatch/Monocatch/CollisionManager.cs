@@ -77,8 +77,11 @@ namespace Monocatch
 
         private static bool DoCollisionDetection(BoxCollider iBoxCollider1, BoxCollider iBoxCollider2)
         {
-            return (Math.Abs(iBoxCollider1.Left - iBoxCollider2.Left) * 2 < (iBoxCollider1.Width + iBoxCollider2.Width)) &&
-                   (Math.Abs(iBoxCollider1.Top - iBoxCollider2.Top) * 2 < (iBoxCollider1.Height + iBoxCollider2.Height));
+            return iBoxCollider1.Left < iBoxCollider2.Right &&
+                   iBoxCollider1.Right > iBoxCollider2.Left &&
+                   iBoxCollider1.Top < iBoxCollider2.Bottom &&
+                   iBoxCollider1.Bottom > iBoxCollider2.Top;
+
         }
 
         private static bool DoCollisionDetection(CircleCollider iCircleCollider1, CircleCollider iCircleCollider2)
@@ -95,11 +98,13 @@ namespace Monocatch
         {
             var circleLeft = iCircleCollider.Center.X - iCircleCollider.Radius;
             var circleTop = iCircleCollider.Center.Y - iCircleCollider.Radius;
-            var circleWidth = iCircleCollider.Radius * 2;
-            var circleHeight = circleWidth;
+            var circleRight = circleLeft + iCircleCollider.Radius * 2;
+            var circleBottom = circleTop + iCircleCollider.Radius * 2;
 
-            return (Math.Abs(iBoxCollider.Left - circleLeft) * 2 < (iBoxCollider.Width + circleWidth)) &&
-                   (Math.Abs(iBoxCollider.Top - circleTop) * 2 < (iBoxCollider.Height + circleHeight));
+            return iBoxCollider.Left < circleRight &&
+                   iBoxCollider.Right > circleLeft &&
+                   iBoxCollider.Top < circleBottom &&
+                   iBoxCollider.Bottom > circleTop;
         }
     }
 }

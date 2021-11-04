@@ -51,7 +51,7 @@ namespace Monocatch
         {
             iDrawAction(GetTexture(), _position);
 
-            _collider.DrawDebug(iDrawAction, _game);
+            //_collider.DrawDebug(iDrawAction, _game);
         }
 
         public void RegisterComponent(ActorComponentBase ioComponent)
