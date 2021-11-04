@@ -18,6 +18,7 @@ namespace Monocatch
             _components = new List<ActorComponentBase>();
             _collider = null;
             _isCollidable = iIsCollidable;
+            _game = iGame;
 
             if (_isCollidable)
                 iGame.RegisterCollidableActor(this);
@@ -49,6 +50,8 @@ namespace Monocatch
         public void Draw(Action<Texture2D, Vector2> iDrawAction)
         {
             iDrawAction(GetTexture(), _position);
+
+            _collider.DrawDebug(iDrawAction, _game);
         }
 
         public void RegisterComponent(ActorComponentBase ioComponent)
@@ -93,7 +96,8 @@ namespace Monocatch
         private readonly FrameForce _thisFrameForce;
         private readonly List<ActorComponentBase> _components;
         private ColliderBase _collider;
-        private bool _isCollidable;
+        private readonly bool _isCollidable;
+        private readonly GameMaster _game;
 
         protected abstract Texture2D GetTexture();
 

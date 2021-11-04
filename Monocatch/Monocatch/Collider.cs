@@ -1,11 +1,15 @@
-﻿using System.Diagnostics;
+﻿using System;
+using System.Diagnostics;
 using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Graphics;
 
 namespace Monocatch
 {
     public abstract class ColliderBase
     {
         public abstract void SetPosition(Vector2 iNewPosition);
+
+        public abstract void DrawDebug(Action<Texture2D, Vector2> iDrawAction, Game iGame);
     }
 
     public class BoxCollider : ColliderBase
@@ -54,6 +58,26 @@ namespace Monocatch
             Right = iNewPosition.X + Width;
             Bottom = iNewPosition.Y + Height;
         }
+
+        public override void DrawDebug(Action<Texture2D, Vector2> iDrawAction, Game iGame)
+        {
+            var colorData = new Color[(int)Width * (int)Height];
+            for (var ii = 0; ii < (int)Height; ii++)
+            {
+                for (var jj = 0; jj < (int)Width; jj++)
+                {
+                    var redOutlineWidth = 2;
+
+                    if (ii < redOutlineWidth|| jj < redOutlineWidth || jj > (int)Width - redOutlineWidth - 1 || ii > (int)Height - redOutlineWidth - 1)
+                        colorData[(ii * ((int)Width)) + jj] = Color.Red;
+                }
+            }
+
+            var texture = new Texture2D(iGame.GraphicsDevice, (int)Width, (int)Height);
+            texture.SetData(colorData);
+
+            iDrawAction(texture, new Vector2(Left, Top));
+        }
     }
 
     public class CircleCollider : ColliderBase
@@ -69,6 +93,10 @@ namespace Monocatch
         public override void SetPosition(Vector2 iNewPosition)
         {
             Center = new Vector2(iNewPosition.X + Radius, iNewPosition.Y + Radius);
+        }
+
+        public override void DrawDebug(Action<Texture2D, Vector2> iDrawAction, Game iGame)
+        {
         }
     }
 }
