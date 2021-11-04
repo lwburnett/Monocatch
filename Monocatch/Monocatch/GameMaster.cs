@@ -1,4 +1,5 @@
-﻿using System.Diagnostics;
+﻿using System;
+using System.Diagnostics;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
@@ -10,9 +11,10 @@ namespace Monocatch
         private readonly GraphicsDeviceManager _graphics;
         private SpriteBatch _spriteBatch;
 
-        private ProjectileActorBase _projectile;
+        //private ProjectileActorBase _projectile;
         private ActorBase _leftWall;
         private ActorBase _rightWall;
+        private ProjectileManager _projectileManager;
         private ActorBase _player;
 
         public GameMaster()
@@ -41,11 +43,16 @@ namespace Monocatch
 
             var chosenWidth = (int)(windowHeight * 9.0f / 16.0f);
 
-            var topLeftPlayAreaX = (int)((windowWidth / 2.0f) - (chosenWidth / 2.0f));
+            var topLeftScreenAreaX = (int)((windowWidth / 2.0f) - (chosenWidth / 2.0f));
 
-            _projectile = new BasicProjectileActor(16, Color.White, new Vector2(topLeftPlayAreaX, 16), new Vector2(20,0), this);
-            _leftWall = new WallActor(new Point(topLeftPlayAreaX, 0), new Point(topLeftPlayAreaX + 8, windowWidth), Color.LightSlateGray, this);
-            _rightWall = new WallActor(new Point(topLeftPlayAreaX + chosenWidth - 8, 0), new Point(topLeftPlayAreaX + chosenWidth, windowWidth), Color.LightSlateGray, this);
+            //_projectile = new BasicProjectileActor(8, Color.White, new Vector2(topLeftPlayAreaX, 16), new Vector2(20,0), this);
+
+            const int wallWidth = 8;
+            var playAreaLeft = topLeftScreenAreaX + wallWidth;
+            var playAreaRight = topLeftScreenAreaX + chosenWidth - wallWidth;
+            _projectileManager = new ProjectileManager(16, windowHeight + 50, playAreaLeft, topLeftScreenAreaX + chosenWidth - 8, this);
+            _leftWall = new WallActor(new Point(topLeftScreenAreaX, 0), new Point(playAreaLeft, windowHeight), Color.LightSlateGray, this);
+            _rightWall = new WallActor(new Point(playAreaRight, 0), new Point(playAreaRight + wallWidth, windowHeight), Color.LightSlateGray, this);
 
             LoadPlayer(chosenWidth, windowHeight, windowWidth);
         }
@@ -55,7 +62,7 @@ namespace Monocatch
             HandleInput();
 
             // TODO: Add your update logic here
-            _projectile.Update(gameTime);
+            _projectileManager.Update(gameTime);
             _player.Update(gameTime);
 
             base.Update(gameTime);
@@ -68,10 +75,10 @@ namespace Monocatch
             GraphicsDevice.Clear(Color.Black);
 
             _spriteBatch.Begin();
-            _projectile.Draw(DrawAction);
             _leftWall.Draw(DrawAction);
             _rightWall.Draw(DrawAction);
             _player.Draw(DrawAction);
+            _projectileManager.Draw(DrawAction);
             _spriteBatch.End();
 
             base.Draw(gameTime);

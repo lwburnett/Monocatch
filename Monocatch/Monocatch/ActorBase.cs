@@ -59,6 +59,8 @@ namespace Monocatch
             _thisFrameForce.Add(iForce);
         }
 
+        public Vector2 GetActorPosition() => _position;
+
         public Vector2 GetActorVelocity() => _velocity;
 
         public float GetActorMass() => _mass;
