@@ -1,11 +1,12 @@
 ﻿using System;
+using Monocatch;
 
-namespace Monocatch
+namespace Monocatch_Windows
 {
-    public static class Program
+    public static class MainProgram
     {
         [STAThread]
-        private static void Main()
+        static void Main()
         {
             using var game = new GameMaster();
             game.Run();

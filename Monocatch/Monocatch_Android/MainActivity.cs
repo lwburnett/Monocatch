@@ -3,6 +3,7 @@ using Android.Content.PM;
 using Android.OS;
 using Android.Views;
 using Microsoft.Xna.Framework;
+using Monocatch;
 
 namespace Monocatch_Android
 {
@@ -15,20 +16,20 @@ namespace Monocatch_Android
         ScreenOrientation = ScreenOrientation.FullUser,
         ConfigurationChanges = ConfigChanges.Orientation | ConfigChanges.Keyboard | ConfigChanges.KeyboardHidden | ConfigChanges.ScreenSize
     )]
-    public class Activity1 : AndroidGameActivity
+    public class MainActivity : AndroidGameActivity
     {
-        //private Game1 _game;
-        //private View _view;
+        private Game _game;
+        private View _view;
 
         protected override void OnCreate(Bundle bundle)
         {
             base.OnCreate(bundle);
 
-            //_game = new Game1();
-            //_view = _game.Services.GetService(typeof(View)) as View;
+            _game = new GameMaster();
+            _view = _game.Services.GetService(typeof(View)) as View;
 
-            //SetContentView(_view);
-            //_game.Run();
+            SetContentView(_view);
+            _game.Run();
         }
     }
 }
