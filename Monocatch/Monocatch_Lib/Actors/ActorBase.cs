@@ -49,9 +49,9 @@ namespace Monocatch_Lib.Actors
             _thisFrameForce.Reset();
         }
 
-        public void Draw(Action<Texture2D, Vector2> iDrawAction)
+        public void Draw()
         {
-            iDrawAction(GetTexture(), _position);
+            _game.DrawTexture(GetTexture(), _position);
 
             //_collider.DrawDebug(iDrawAction, _game);
         }

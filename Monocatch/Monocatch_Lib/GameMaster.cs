@@ -1,10 +1,11 @@
-﻿using System.Diagnostics;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
-using Microsoft.Xna.Framework.Input;
 using Monocatch_Lib.Actors;
-using Monocatch_Lib.Actors.Components;
 using Monocatch_Lib.Collision;
+using Monocatch_Lib.Screens;
 
 namespace Monocatch_Lib
 {
@@ -13,17 +14,22 @@ namespace Monocatch_Lib
         private readonly GraphicsDeviceManager _graphics;
         private SpriteBatch _spriteBatch;
         
-        private ActorBase _leftWall;
-        private ActorBase _rightWall;
-        private ProjectileManager _projectileManager;
+        private ScreenId _currentScreenId;
+        private readonly Dictionary<ScreenId, ScreenBase> _idToScreenDictionary;
+
         private CollisionManager _collisionManager;
-        private ActorBase _player;
 
         public GameMaster()
         {
             _graphics = new GraphicsDeviceManager(this);
             Content.RootDirectory = "Content";
             IsMouseVisible = true;
+            
+            _idToScreenDictionary = new Dictionary<ScreenId, ScreenBase>();
+            foreach (var enumValue in Enum.GetValues(typeof(ScreenId)).Cast<ScreenId>())
+            {
+                _idToScreenDictionary.Add(enumValue, null);
+            }
         }
 
         public void RegisterCollidableActor(ActorBase iActor)
@@ -36,8 +42,20 @@ namespace Monocatch_Lib
             _collisionManager.Unregister(iActor);
         }
 
+        public void DrawTexture(Texture2D iTexture, Vector2 iPosition)
+        {
+            _spriteBatch.Draw(iTexture, iPosition, Color.White);
+        }
+
+        public void DrawString(SpriteFont iSpriteFont, string iString, Vector2 iPosition, Color iFontColor, float iFontSize = 24)
+        {
+            _spriteBatch.DrawString(iSpriteFont, iString, iPosition, iFontColor, 0.0f, Vector2.Zero, iFontSize, SpriteEffects.None, 0.0f);
+        }
+
         protected override void Initialize()
         {
+            _collisionManager = new CollisionManager();
+
             _graphics.PreferredBackBufferHeight = GraphicsDevice.DisplayMode.Height;
             _graphics.PreferredBackBufferWidth = GraphicsDevice.DisplayMode.Width;
             _graphics.IsFullScreen = true;
@@ -49,101 +67,48 @@ namespace Monocatch_Lib
         protected override void LoadContent()
         {
             _spriteBatch = new SpriteBatch(GraphicsDevice);
-            _collisionManager = new CollisionManager();
 
-            var windowHeight = Window.ClientBounds.Height;
-            var windowWidth = Window.ClientBounds.Width;
-
-            var chosenWidth = (int)(windowHeight * 9.0f / 16.0f);
-
-            var topLeftScreenAreaX = (int)((windowWidth / 2.0f) - (chosenWidth / 2.0f));
-
-            const int wallWidth = 8;
-            var playAreaLeft = topLeftScreenAreaX + wallWidth;
-            var playAreaRight = topLeftScreenAreaX + chosenWidth - wallWidth;
-            _projectileManager = new ProjectileManager(16, windowHeight + 50, playAreaLeft, topLeftScreenAreaX + chosenWidth - 8, this);
-            _leftWall = new WallActor(new Point(topLeftScreenAreaX, 0), new Point(playAreaLeft, windowHeight), Color.LightSlateGray, this);
-            _rightWall = new WallActor(new Point(playAreaRight, 0), new Point(playAreaRight + wallWidth, windowHeight), Color.LightSlateGray, this);
-
-            LoadPlayer(chosenWidth, windowHeight, windowWidth);
+            _currentScreenId = ScreenId.MainMenu;
+            _idToScreenDictionary[_currentScreenId] = new MainMenuScreen(OnPlayGame, OnExitGame, this);
+            _idToScreenDictionary[_currentScreenId].OnNavigateTo();
         }
 
         protected override void Update(GameTime gameTime)
         {
-            HandleInput();
-
+            _idToScreenDictionary[_currentScreenId].Update(gameTime);
             _collisionManager.Update(gameTime);
-            _projectileManager.Update(gameTime);
-            _player.Update(gameTime);
 
             base.Update(gameTime);
         }
 
         protected override void Draw(GameTime gameTime)
         {
-            void DrawAction(Texture2D tx, Vector2 vec) => _spriteBatch.Draw(tx, vec, Color.White);
-
             GraphicsDevice.Clear(Color.Black);
 
             _spriteBatch.Begin();
-            _leftWall.Draw(DrawAction);
-            _rightWall.Draw(DrawAction);
-            _player.Draw(DrawAction);
-            _projectileManager.Draw(DrawAction);
+            _idToScreenDictionary[_currentScreenId].Draw();
+
             _spriteBatch.End();
 
             base.Draw(gameTime);
         }
 
-        // Using this in place of a player controller because of this game's simplicity
-        private void HandleInput()
+        private void OnPlayGame()
         {
-            if (GamePad.GetState(PlayerIndex.One).Buttons.Back == ButtonState.Pressed || Keyboard.GetState().IsKeyDown(Keys.Escape))
-                Exit();
-
-            var playerMovementComponent = _player.GetComponentByType<PlayerMovementComponent>();
-
-            Debug.Assert(playerMovementComponent != null);
-            
-            var isLeftDown = Keyboard.GetState().IsKeyDown(Keys.Left);
-            var isRightDown = Keyboard.GetState().IsKeyDown(Keys.Right);
-
-            if (!isLeftDown && !isRightDown)
-            {
-                playerMovementComponent.IntendNoneAction();
-                return;
-            }
-
-            if (isLeftDown && isRightDown)
-            {
-                playerMovementComponent.IntendBothAction();
-                return;
-            }
-
-            if (isLeftDown)
-            {
-                playerMovementComponent.IntendLeftAction();
-                return;
-            }
-
-            playerMovementComponent.IntendRightAction();
+            _currentScreenId = ScreenId.GamePlay;
+            _idToScreenDictionary[_currentScreenId] = new GamePlayScreen(OnExitGame, this);
+            _idToScreenDictionary[_currentScreenId].OnNavigateTo();
         }
 
-        private void LoadPlayer(int chosenWidth, int windowHeight, int windowWidth)
+        private void OnExitGame()
         {
-            var playerWidth = (int)(chosenWidth / 10.0f);
-            var playerHeight = (int)(windowHeight / 64.0f);
-            var playerTopLeftX = (int)(windowWidth / 2.0f - playerWidth / 2.0f);
-            var playerTopLeftY = (int)(windowHeight * .75f - playerHeight / 2.0f);
-            _player = new PlayerActor(
-                new Vector2(playerTopLeftX, playerTopLeftY),
-                playerWidth,
-                playerHeight,
-                Color.LightCoral,
-                this);
+            Exit();
+        }
 
-            var playerMovementComponent = new PlayerMovementComponent();
-            _player.RegisterComponent(playerMovementComponent);
+        private enum ScreenId
+        {
+            MainMenu,
+            GamePlay
         }
     }
 }

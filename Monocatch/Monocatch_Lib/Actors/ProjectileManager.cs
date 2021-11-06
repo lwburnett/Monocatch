@@ -49,9 +49,9 @@ namespace Monocatch_Lib.Actors
             }
         }
 
-        public void Draw(Action<Texture2D, Vector2> iDrawAction)
+        public void Draw()
         {
-            _activeProjectiles.ForEach(p => p.Draw(iDrawAction));
+            _activeProjectiles.ForEach(p => p.Draw());
         }
 
         private readonly int _startingHeight;
