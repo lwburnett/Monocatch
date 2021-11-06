@@ -47,9 +47,9 @@ namespace Monocatch_Lib
             _spriteBatch.Draw(iTexture, iPosition, Color.White);
         }
 
-        public void DrawString(SpriteFont iSpriteFont, string iString, Vector2 iPosition, Color iFontColor, float iFontSize = 24)
+        public void DrawString(SpriteFont iSpriteFont, string iString, Vector2 iPosition, Color iFontColor, float iFontScaling = 24.0f)
         {
-            _spriteBatch.DrawString(iSpriteFont, iString, iPosition, iFontColor, 0.0f, Vector2.Zero, iFontSize, SpriteEffects.None, 0.0f);
+            _spriteBatch.DrawString(iSpriteFont, iString, iPosition, iFontColor, 0.0f, Vector2.Zero, iFontScaling, SpriteEffects.None, 0.0f);
         }
 
         protected override void Initialize()

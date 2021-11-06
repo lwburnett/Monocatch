@@ -86,7 +86,9 @@ namespace Monocatch_Lib.Ui
             else
                 _game.DrawTexture(_pressedTexture, _topLeft.ToVector2());
 
-            _game.DrawString(_textFont, _text, new Vector2(_topLeft.X + _width / 2.0f, _topLeft.Y + _height / 2.0f), Color.Black);
+            const float scaling = 1.0f;
+            var stringDimensions = _textFont.MeasureString(_text) * scaling;
+            _game.DrawString(_textFont, _text, new Vector2(_topLeft.X + (_width - stringDimensions.X) / 2f, _topLeft.Y + (_height - stringDimensions.Y) / 2f), Color.Black, scaling);
         }
 
         private Point _topLeft;
