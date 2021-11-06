@@ -2,8 +2,9 @@
 using System.Collections.Generic;
 using System.Diagnostics;
 using Microsoft.Xna.Framework;
+using Monocatch_Lib.Actors;
 
-namespace Monocatch_Lib
+namespace Monocatch_Lib.Collision
 {
     public class CollisionManager
     {

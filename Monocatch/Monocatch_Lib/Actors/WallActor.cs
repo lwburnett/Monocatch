@@ -1,8 +1,9 @@
 ﻿using System.Diagnostics;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
+using Monocatch_Lib.Collision;
 
-namespace Monocatch_Lib
+namespace Monocatch_Lib.Actors
 {
     public class WallActor : ActorBase
     {

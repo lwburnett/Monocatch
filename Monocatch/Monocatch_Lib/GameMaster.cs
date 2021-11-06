@@ -2,6 +2,9 @@
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
+using Monocatch_Lib.Actors;
+using Monocatch_Lib.Actors.Components;
+using Monocatch_Lib.Collision;
 
 namespace Monocatch_Lib
 {

@@ -3,9 +3,11 @@ using System.Collections.Generic;
 using System.Linq;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
+using Monocatch_Lib.Actors.Components;
+using Monocatch_Lib.Collision;
 using Vector2 = Microsoft.Xna.Framework.Vector2;
 
-namespace Monocatch_Lib
+namespace Monocatch_Lib.Actors
 {
     public abstract class ActorBase
     {

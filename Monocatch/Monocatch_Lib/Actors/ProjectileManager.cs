@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 
-namespace Monocatch_Lib
+namespace Monocatch_Lib.Actors
 {
     public class ProjectileManager
     {

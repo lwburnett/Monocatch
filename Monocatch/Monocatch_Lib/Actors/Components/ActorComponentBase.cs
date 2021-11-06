@@ -1,7 +1,7 @@
 ﻿using System.Diagnostics;
 using Microsoft.Xna.Framework;
 
-namespace Monocatch_Lib
+namespace Monocatch_Lib.Actors.Components
 {
     public abstract class ActorComponentBase
     {

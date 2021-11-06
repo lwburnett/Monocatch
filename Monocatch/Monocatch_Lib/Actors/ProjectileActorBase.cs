@@ -1,6 +1,6 @@
 ﻿using Microsoft.Xna.Framework;
 
-namespace Monocatch_Lib
+namespace Monocatch_Lib.Actors
 {
     public abstract class ProjectileActorBase : ActorBase
     {
