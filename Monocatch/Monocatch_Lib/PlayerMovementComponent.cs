@@ -3,7 +3,7 @@ using System.Diagnostics;
 using Microsoft.Xna.Framework;
 using Vector2 = Microsoft.Xna.Framework.Vector2;
 
-namespace Monocatch
+namespace Monocatch_Lib
 {
     public class PlayerMovementComponent : ActorComponentBase
     {

@@ -3,7 +3,7 @@ using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 
-namespace Monocatch
+namespace Monocatch_Lib
 {
     public class GameMaster : Game
     {

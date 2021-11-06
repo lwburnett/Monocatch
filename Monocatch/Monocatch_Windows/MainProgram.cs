@@ -1,5 +1,5 @@
 ﻿using System;
-using Monocatch;
+using Monocatch_Lib;
 
 namespace Monocatch_Windows
 {

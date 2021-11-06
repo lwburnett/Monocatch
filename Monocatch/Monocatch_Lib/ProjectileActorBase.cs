@@ -1,8 +1,6 @@
-﻿using System;
-using Microsoft.Xna.Framework;
-using Microsoft.Xna.Framework.Graphics;
+﻿using Microsoft.Xna.Framework;
 
-namespace Monocatch
+namespace Monocatch_Lib
 {
     public abstract class ProjectileActorBase : ActorBase
     {
