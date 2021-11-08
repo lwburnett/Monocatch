@@ -52,6 +52,8 @@ namespace Monocatch_Lib
             _spriteBatch.DrawString(iSpriteFont, iString, iPosition, iFontColor, 0.0f, Vector2.Zero, iFontScaling, SpriteEffects.None, 0.0f);
         }
 
+        public Rectangle GamePlayArea { get; private set; }
+
         protected override void Initialize()
         {
             _collisionManager = new CollisionManager();
@@ -67,6 +69,16 @@ namespace Monocatch_Lib
         protected override void LoadContent()
         {
             _spriteBatch = new SpriteBatch(GraphicsDevice);
+
+            var windowHeight = Window.ClientBounds.Height;
+            var windowWidth = Window.ClientBounds.Width;
+
+            var chosenWidth = (int)(windowHeight * 9.0f / 16.0f);
+            var chosenHeight = windowHeight;
+
+            var topLeftGamePlayAreaX = (int)((windowWidth / 2.0f) - (chosenWidth / 2.0f));
+            var topLeftGamePlayAreaY = 0;
+            GamePlayArea = new Rectangle(topLeftGamePlayAreaX, topLeftGamePlayAreaY, chosenWidth, chosenHeight);
 
             _currentScreenId = ScreenId.MainMenu;
             _idToScreenDictionary[_currentScreenId] = new MainMenuScreen(OnPlayGame, OnExitGame, this);

@@ -18,21 +18,16 @@ namespace Monocatch_Lib.Screens
         {
             Game.IsMouseVisible = false;
 
-            var windowHeight = Game.Window.ClientBounds.Height;
-            var windowWidth = Game.Window.ClientBounds.Width;
-
-            var chosenWidth = (int)(windowHeight * 9.0f / 16.0f);
-
-            var topLeftScreenAreaX = (int)((windowWidth / 2.0f) - (chosenWidth / 2.0f));
+            var gamePlayArea = Game.GamePlayArea;
 
             const int wallWidth = 8;
-            var playAreaLeft = topLeftScreenAreaX + wallWidth;
-            var playAreaRight = topLeftScreenAreaX + chosenWidth - wallWidth;
-            _projectileManager = new ProjectileManager(16, windowHeight + 50, playAreaLeft, topLeftScreenAreaX + chosenWidth - 8, Game);
-            _leftWall = new WallActor(new Point(topLeftScreenAreaX, 0), new Point(playAreaLeft, windowHeight), Color.LightSlateGray, Game);
-            _rightWall = new WallActor(new Point(playAreaRight, 0), new Point(playAreaRight + wallWidth, windowHeight), Color.LightSlateGray, Game);
+            var playAreaLeft = gamePlayArea.X + wallWidth;
+            var playAreaRight = gamePlayArea.X + gamePlayArea.Width - wallWidth;
+            _projectileManager = new ProjectileManager(16, gamePlayArea.Height + 50, playAreaLeft, gamePlayArea.X + gamePlayArea.Width - 8, Game);
+            _leftWall = new WallActor(new Point(gamePlayArea.X, 0), new Point(playAreaLeft, gamePlayArea.Height), Color.LightSlateGray, Game);
+            _rightWall = new WallActor(new Point(playAreaRight, 0), new Point(playAreaRight + wallWidth, gamePlayArea.Height), Color.LightSlateGray, Game);
 
-            LoadPlayer(chosenWidth, windowHeight, windowWidth, Game);
+            LoadPlayer();
         }
 
         public override void Update(GameTime iGameTime)
@@ -61,18 +56,20 @@ namespace Monocatch_Lib.Screens
         private readonly Action _onExitCallback;
 
 
-        private void LoadPlayer(int chosenWidth, int windowHeight, int windowWidth, GameMaster iGameMaster)
+        private void LoadPlayer()
         {
-            var playerWidth = (int)(chosenWidth / 10.0f);
-            var playerHeight = (int)(windowHeight / 64.0f);
-            var playerTopLeftX = (int)(windowWidth / 2.0f - playerWidth / 2.0f);
-            var playerTopLeftY = (int)(windowHeight * .75f - playerHeight / 2.0f);
+            var playArea = Game.GamePlayArea;
+
+            var playerWidth = (int)(playArea.Width / 10.0f);
+            var playerHeight = (int)(playArea.Height / 64.0f);
+            var playerTopLeftX = (int)(playArea.X + playArea.Width / 2.0f - playerWidth / 2.0f);
+            var playerTopLeftY = (int)(playArea.Y + playArea.Height * .75f - playerHeight / 2.0f);
             _player = new PlayerActor(
                 new Vector2(playerTopLeftX, playerTopLeftY),
                 playerWidth,
                 playerHeight,
                 Color.LightCoral,
-                iGameMaster);
+                Game);
 
             var playerMovementComponent = new PlayerMovementComponent();
             _player.RegisterComponent(playerMovementComponent);
