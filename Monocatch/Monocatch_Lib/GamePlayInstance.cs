@@ -21,10 +21,12 @@ namespace Monocatch_Lib
         {
             var gamePlayArea = _game.GamePlayArea;
 
-            const int wallWidth = 8;
+            var wallWidth = (int)(SettingsManager.WallSettings.WallWidthAsFractionOfPlayAreaWidth * gamePlayArea.Width);
             var playAreaLeft = gamePlayArea.X + wallWidth;
             var playAreaRight = gamePlayArea.X + gamePlayArea.Width - wallWidth;
-            _projectileManager = new ProjectileManager(16, gamePlayArea.Height + 50, playAreaLeft, gamePlayArea.X + gamePlayArea.Width - 8, _game);
+            var bottomBound = (int)(gamePlayArea.Height * SettingsManager.ProjectileManagerSettings.DespawnHeightAsFractionOfPlayAreaHeight);
+            var spawningHeight = (int)(gamePlayArea.Height * SettingsManager.ProjectileManagerSettings.SpawnHeightAsFractionOfPlayAreaHeight);
+            _projectileManager = new ProjectileManager(spawningHeight, bottomBound, playAreaLeft, gamePlayArea.X + gamePlayArea.Width - wallWidth, _game);
             _leftWall = new WallActor(new Point(gamePlayArea.X, 0), new Point(playAreaLeft, gamePlayArea.Height), Color.LightSlateGray, _game);
             _rightWall = new WallActor(new Point(playAreaRight, 0), new Point(playAreaRight + wallWidth, gamePlayArea.Height), Color.LightSlateGray, _game);
 
@@ -65,10 +67,10 @@ namespace Monocatch_Lib
         {
             var playArea = _game.GamePlayArea;
 
-            var playerWidth = (int)(playArea.Width / 10.0f);
-            var playerHeight = (int)(playArea.Height / 64.0f);
+            var playerWidth = (int)(playArea.Width * SettingsManager.PlayerSettings.WidthAsFractionOfPlayAreaWidth);
+            var playerHeight = (int)(playArea.Height * SettingsManager.PlayerSettings.HeightAsFractionOfPlayAreaHeight);
             var playerTopLeftX = (int)(playArea.X + playArea.Width / 2.0f - playerWidth / 2.0f);
-            var playerTopLeftY = (int)(playArea.Y + playArea.Height * .75f - playerHeight / 2.0f);
+            var playerTopLeftY = (int)(playArea.Y + playArea.Height * SettingsManager.PlayerSettings.SpawnHeightAsFractionOfPlayAreaHeight - playerHeight / 2.0f);
             _player = new PlayerActor(
                 new Vector2(playerTopLeftX, playerTopLeftY),
                 playerWidth,

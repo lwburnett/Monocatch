@@ -13,10 +13,10 @@ namespace Monocatch_Lib.Actors
             _bottomBound = iBottomBound;
             _leftXBound = iLeftBound;
             _rightXBound = iRightBound;
-            _maxSpawningXSpeed = 100.0f;
+            _maxSpawningXSpeed = SettingsManager.ProjectileManagerSettings.MaxXSpeedOnSpawn;
             _game = iGame;
             _lastSpawn = TimeSpan.Zero;
-            _spawnIntervalSeconds = TimeSpan.FromSeconds(2);
+            _spawnIntervalSeconds = SettingsManager.ProjectileManagerSettings.SpawningInterval;
             _rng = new Random();
             _activeProjectiles = new List<ProjectileActorBase>();
         }

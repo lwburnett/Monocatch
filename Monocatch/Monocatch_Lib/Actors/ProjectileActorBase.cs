@@ -14,7 +14,7 @@ namespace Monocatch_Lib.Actors
         
         protected sealed override void vUpdate(GameTime gameTime)
         {
-            AddForce(Game.GravityForce);
+            AddForce(SettingsManager.WorldSettings.GravityForce);
         }
     }
 }

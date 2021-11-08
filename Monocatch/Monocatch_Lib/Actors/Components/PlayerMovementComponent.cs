@@ -68,12 +68,6 @@ namespace Monocatch_Lib.Actors.Components
         private PhysicalState _physicalState;
         private float _floorLocation;
         private TimeSpan _lastLandTime;
-        private const float CGlideFrictionForce = 50.0f;
-        private const float CMovementForce = 50.0f;
-        private const float CTopHorizontalSpeed = 100.0f;
-        // ReSharper disable once InconsistentNaming
-        private readonly TimeSpan CRecoveryTime = TimeSpan.FromSeconds(1);
-        private const float CJumpVelocity = 100.0f;
 
         private enum MovementAction
         {
@@ -106,11 +100,11 @@ namespace Monocatch_Lib.Actors.Components
                     }
                     else
                     {
-                        Owner.AddForce(Game.GravityForce);
+                        Owner.AddForce(SettingsManager.WorldSettings.GravityForce);
                     }
                     break;
                 case PhysicalState.LandRecovery:
-                    if (iGameTime.TotalGameTime - _lastLandTime > CRecoveryTime)
+                    if (iGameTime.TotalGameTime - _lastLandTime > SettingsManager.PlayerSettings.RecoveryTime)
                         _physicalState = PhysicalState.Grounded;
                     break;
                 default:
@@ -122,7 +116,7 @@ namespace Monocatch_Lib.Actors.Components
         private void HandleGlide()
         {
             var currentVelocity = Owner.GetActorVelocity();
-            Owner.AddForce(GetStoppingForce(currentVelocity, CGlideFrictionForce));
+            Owner.AddForce(GetStoppingForce(currentVelocity, SettingsManager.PlayerSettings.GlideFrictionForce));
         }
 
         private void HandleHorizontalMovement(Vector2 iDirectionVector, GameTime iGameTime)
@@ -133,7 +127,7 @@ namespace Monocatch_Lib.Actors.Components
             var currentVelocity = Owner.GetActorVelocity();
             var mass = Owner.GetActorMass();
 
-            Owner.AddForce(GetMovementForce(currentVelocity, iDirectionVector * CMovementForce, mass, iGameTime));
+            Owner.AddForce(GetMovementForce(currentVelocity, iDirectionVector * SettingsManager.PlayerSettings.MovementForce, mass, iGameTime));
         }
 
         private void HandleJump(GameTime iGameTime)
@@ -146,7 +140,7 @@ namespace Monocatch_Lib.Actors.Components
                 case PhysicalState.Grounded:
                     // Remember positive Y is down
                     var forceToGetDesiredVelocity = 
-                        (currentVelocity.Y - CJumpVelocity) * mass / (float)iGameTime.ElapsedGameTime.TotalSeconds;
+                        (currentVelocity.Y - SettingsManager.PlayerSettings.JumpVelocity) * mass / (float)iGameTime.ElapsedGameTime.TotalSeconds;
                     Owner.AddForce(new Vector2(0, forceToGetDesiredVelocity));
                     _physicalState = PhysicalState.Airborne;
                     break;
@@ -162,11 +156,11 @@ namespace Monocatch_Lib.Actors.Components
         // What happens if current velocity is greater than top speed?
         private static Vector2 GetMovementForce(Vector2 iCurrentVelocity, Vector2 iMovementForce, float iMass, GameTime iGameTime)
         {
-            if (iCurrentVelocity.Length() < CTopHorizontalSpeed)
+            if (iCurrentVelocity.Length() < SettingsManager.PlayerSettings.TopHorizontalSpeed)
             {
                 var movementForceDirection = iMovementForce;
                 movementForceDirection.Normalize();
-                var forceToTopSpeedThisTick = (CTopHorizontalSpeed * movementForceDirection - iCurrentVelocity) * iMass / (float)iGameTime.ElapsedGameTime.TotalSeconds;
+                var forceToTopSpeedThisTick = (SettingsManager.PlayerSettings.TopHorizontalSpeed * movementForceDirection - iCurrentVelocity) * iMass / (float)iGameTime.ElapsedGameTime.TotalSeconds;
 
                 return (Math.Abs(iMovementForce.Length()) < Math.Abs(forceToTopSpeedThisTick.Length())) ?
                     iMovementForce :

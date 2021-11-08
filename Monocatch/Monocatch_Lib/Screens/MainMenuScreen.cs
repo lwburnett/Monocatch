@@ -17,17 +17,17 @@ namespace Monocatch_Lib.Screens
         {
             Game.IsMouseVisible = true;
 
-            var windowHeight = Game.Window.ClientBounds.Height;
-            var windowWidth = Game.Window.ClientBounds.Width;
+            var gamePlayAreaWidth = Game.GamePlayArea.Width;
+            var gamePlayAreaHeight = Game.GamePlayArea.Height;
 
-            var buttonWidth = (int)(windowWidth / 16.0f);
-            var buttonHeight = (int)(windowHeight / 16.0f);
+            var buttonWidth = (int)(gamePlayAreaWidth * SettingsManager.MainMenuSettings.ButtonWidthAsFractionOfPlayAreaWidth);
+            var buttonHeight = (int)(gamePlayAreaHeight * SettingsManager.MainMenuSettings.ButtonHeightAsFractionOfPlayAreaHeight);
 
-            var playButtonTopLeftX = (windowWidth - buttonWidth) / 2;
-            var playButtonTopLeftY = (windowHeight - 2 * buttonWidth) / 2;
+            var playButtonTopLeftX = Game.GamePlayArea.X + (gamePlayAreaWidth - buttonWidth) / 2;
+            var playButtonTopLeftY = Game.GamePlayArea.Y + (gamePlayAreaHeight - 2 * buttonWidth) / 2;
 
-            var exitButtonTopLeftX = (windowWidth - buttonWidth) / 2;
-            var exitButtonTopLeftY = (windowHeight + 2 * buttonHeight) / 2;
+            var exitButtonTopLeftX = Game.GamePlayArea.X + (gamePlayAreaWidth - buttonWidth) / 2;
+            var exitButtonTopLeftY = Game.GamePlayArea.Y + (gamePlayAreaHeight + 2 * buttonHeight) / 2;
 
             _playButton = new UiTextButton(new Point(playButtonTopLeftX, playButtonTopLeftY), buttonWidth, buttonHeight, "Play", OnPlayClicked, Game);
             _exitButton = new UiTextButton(new Point(exitButtonTopLeftX, exitButtonTopLeftY), buttonWidth, buttonHeight, "Exit", OnExitClicked, Game);

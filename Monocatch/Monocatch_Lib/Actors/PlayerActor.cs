@@ -8,7 +8,7 @@ namespace Monocatch_Lib.Actors
     public class PlayerActor : ActorBase
     {
         public PlayerActor(Vector2 iPosition, int iPlayerWidth, int iPlayerHeight, Color iFillColor, GameMaster iGame) : 
-            base(iPosition, Vector2.Zero, 1.0f, true, iGame)
+            base(iPosition, Vector2.Zero, SettingsManager.PlayerSettings.Mass, true, iGame)
         {
             Debug.Assert(iPlayerWidth > 0);
             Debug.Assert(iPlayerHeight > 0);

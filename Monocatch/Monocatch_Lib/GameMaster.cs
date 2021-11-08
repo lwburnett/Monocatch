@@ -56,8 +56,6 @@ namespace Monocatch_Lib
 
         public Rectangle GamePlayArea { get; private set; }
 
-        public Vector2 GravityForce { get; } = new Vector2(0.0f, 100f);
-
         protected override void Initialize()
         {
             _collisionManager = new CollisionManager();
@@ -77,7 +75,7 @@ namespace Monocatch_Lib
             var windowHeight = Window.ClientBounds.Height;
             var windowWidth = Window.ClientBounds.Width;
 
-            var chosenWidth = (int)(windowHeight * 9.0f / 16.0f);
+            var chosenWidth = (int)(windowHeight / SettingsManager.GameMasterSettings.TargetScreenAspectRatio);
             var chosenHeight = windowHeight;
 
             var topLeftGamePlayAreaX = (int)((windowWidth / 2.0f) - (chosenWidth / 2.0f));

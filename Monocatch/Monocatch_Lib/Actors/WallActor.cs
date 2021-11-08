@@ -8,7 +8,7 @@ namespace Monocatch_Lib.Actors
     public class WallActor : ActorBase
     {
         public WallActor(Point iTopLeft, Point iBottomRight, Color iFillColor, GameMaster iGame) : 
-            base(iTopLeft.ToVector2(), Vector2.Zero, 1.0f, true, iGame)
+            base(iTopLeft.ToVector2(), Vector2.Zero, SettingsManager.WallSettings.Mass, true, iGame)
         {
             Debug.Assert(iTopLeft.X < iBottomRight.X);
             Debug.Assert(iTopLeft.Y < iBottomRight.Y);

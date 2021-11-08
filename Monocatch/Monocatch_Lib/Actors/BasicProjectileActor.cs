@@ -9,15 +9,11 @@ namespace Monocatch_Lib.Actors
     public class BasicProjectileActor : ProjectileActorBase
     {
         public BasicProjectileActor(int iRadius, Color iProjectileColor, Vector2 iPosition, Vector2 iVelocity, GameMaster iGame) : 
-            base(iPosition, iVelocity, 1.0f, iGame)
+            base(iPosition, iVelocity, SettingsManager.BasicProjectileSettings.Mass, iGame)
         {
             Debug.Assert(iRadius > 0);
             Debug.Assert(iProjectileColor != Color.Transparent);
             Debug.Assert(iGame != null);
-
-            _radius = iRadius;
-            _color = iProjectileColor;
-            _game = iGame;
 
             var diameter = 2 * iRadius;
 
@@ -28,22 +24,19 @@ namespace Monocatch_Lib.Actors
                 for (var yy = 0; yy < diameter; yy++)
                 {
                     var thisIndex = xx * diameter + yy;
-                    var distanceFromCenter = new Vector2(xx - _radius, yy - _radius);
+                    var distanceFromCenter = new Vector2(xx - iRadius, yy - iRadius);
 
-                    colorData[thisIndex] = Math.Abs(distanceFromCenter.Length()) < _radius ?
-                        _color : Color.Transparent;
+                    colorData[thisIndex] = Math.Abs(distanceFromCenter.Length()) < iRadius ?
+                        iProjectileColor : Color.Transparent;
                 }
             }
 
-            _texture = new Texture2D(_game.GraphicsDevice, diameter, diameter);
+            _texture = new Texture2D(iGame.GraphicsDevice, diameter, diameter);
             _texture.SetData(colorData);
-            SetCollider(new CircleCollider(new Vector2(iPosition.X + _radius,iPosition.Y + _radius), _radius));
+            SetCollider(new CircleCollider(new Vector2(iPosition.X + iRadius, iPosition.Y + iRadius), iRadius));
         }
 
         private readonly Texture2D _texture;
-        private readonly int _radius;
-        private readonly Color _color;
-        private readonly GameMaster _game;
 
         protected sealed override Texture2D GetTexture() => _texture;
 
