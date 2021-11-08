@@ -12,11 +12,9 @@ namespace Monocatch_Lib.Actors
 
         public bool IsCaught { get; protected set; }
         
-        private const float _cGravityMag = 100f;
-        
         protected sealed override void vUpdate(GameTime gameTime)
         {
-            AddForce(new Vector2(0.0f, _cGravityMag));
+            AddForce(Game.GravityForce);
         }
     }
 }

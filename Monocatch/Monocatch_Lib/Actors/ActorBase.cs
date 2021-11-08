@@ -20,7 +20,7 @@ namespace Monocatch_Lib.Actors
             _components = new List<ActorComponentBase>();
             _collider = null;
             _isCollidable = iIsCollidable;
-            _game = iGame;
+            Game = iGame;
 
             if (_isCollidable)
                 iGame.RegisterCollidableActor(this);
@@ -51,7 +51,7 @@ namespace Monocatch_Lib.Actors
 
         public void Draw()
         {
-            _game.DrawTexture(GetTexture(), _position);
+            Game.DrawTexture(GetTexture(), _position);
 
             //_collider.DrawDebug(iDrawAction, _game);
         }
@@ -76,9 +76,14 @@ namespace Monocatch_Lib.Actors
 
         public Vector2 GetActorPosition() => _position;
 
+        public void SetActorPosition(Vector2 iNewPosition)
+        {
+            _position = iNewPosition;
+        }
+
         public Vector2 GetActorVelocity() => _velocity;
 
-        protected void SetActorVelocity(Vector2 iNewVelocity)
+        public void SetActorVelocity(Vector2 iNewVelocity)
         {
             _velocity = iNewVelocity;
         }
@@ -92,6 +97,8 @@ namespace Monocatch_Lib.Actors
             _collider = iCollider;
         }
 
+        protected GameMaster Game { get; }
+
         private Vector2 _position;
         private Vector2 _velocity;
         private readonly float _mass;
@@ -99,7 +106,6 @@ namespace Monocatch_Lib.Actors
         private readonly List<ActorComponentBase> _components;
         private ColliderBase _collider;
         private readonly bool _isCollidable;
-        private readonly GameMaster _game;
 
         protected abstract Texture2D GetTexture();
 

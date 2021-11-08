@@ -13,7 +13,9 @@ namespace Monocatch_Lib
     {
         private readonly GraphicsDeviceManager _graphics;
         private SpriteBatch _spriteBatch;
-        
+        private GameTime _gameTime;
+
+
         private ScreenId _currentScreenId;
         private readonly Dictionary<ScreenId, ScreenBase> _idToScreenDictionary;
 
@@ -54,6 +56,8 @@ namespace Monocatch_Lib
 
         public Rectangle GamePlayArea { get; private set; }
 
+        public Vector2 GravityForce { get; } = new Vector2(0.0f, 100f);
+
         protected override void Initialize()
         {
             _collisionManager = new CollisionManager();
@@ -87,6 +91,8 @@ namespace Monocatch_Lib
 
         protected override void Update(GameTime gameTime)
         {
+            _gameTime = gameTime;
+
             _idToScreenDictionary[_currentScreenId].Update(gameTime);
             _collisionManager.Update(gameTime);
 
@@ -107,8 +113,11 @@ namespace Monocatch_Lib
 
         private void OnPlayGame()
         {
+            var gameStart = _gameTime.TotalGameTime;
+            var gamePlayInstance = new GamePlayInstance(gameStart, this);
+
             _currentScreenId = ScreenId.GamePlay;
-            _idToScreenDictionary[_currentScreenId] = new GamePlayScreen(OnExitGame, this);
+            _idToScreenDictionary[_currentScreenId] = new GamePlayScreen(gamePlayInstance, OnExitGame, this);
             _idToScreenDictionary[_currentScreenId].OnNavigateTo();
         }
 
