@@ -115,8 +115,11 @@ namespace Monocatch_Lib.Actors.Components
 
         private void HandleGlide()
         {
-            var currentVelocity = Owner.GetActorVelocity();
-            Owner.AddForce(GetStoppingForce(currentVelocity, SettingsManager.PlayerSettings.GlideFrictionForce));
+            if (_physicalState != PhysicalState.Airborne)
+            {
+                var currentVelocity = Owner.GetActorVelocity();
+                Owner.AddForce(GetStoppingForce(currentVelocity, SettingsManager.PlayerSettings.GlideFrictionForce));
+            }
         }
 
         private void HandleHorizontalMovement(Vector2 iDirectionVector, GameTime iGameTime)
