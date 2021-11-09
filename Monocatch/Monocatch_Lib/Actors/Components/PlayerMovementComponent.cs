@@ -11,6 +11,9 @@ namespace Monocatch_Lib.Actors.Components
         {
             _thisTickIntendedMovementAction = MovementAction.Glide;
             _physicalState = PhysicalState.Grounded;
+            _floorLocation = 0.0f;
+            _lastLandTime = TimeSpan.MinValue;
+            _jumpWindupBegin = null;
         }
 
         protected sealed override void vUpdate(GameTime iGameTime)
@@ -68,6 +71,7 @@ namespace Monocatch_Lib.Actors.Components
         private PhysicalState _physicalState;
         private float _floorLocation;
         private TimeSpan _lastLandTime;
+        private TimeSpan? _jumpWindupBegin;
 
         private enum MovementAction
         {
@@ -141,14 +145,24 @@ namespace Monocatch_Lib.Actors.Components
             switch (_physicalState)
             {
                 case PhysicalState.Grounded:
-                    // Remember positive Y is down
-                    var forceToGetDesiredVelocity = 
-                        (currentVelocity.Y - SettingsManager.PlayerSettings.JumpVelocity) * mass / (float)iGameTime.ElapsedGameTime.TotalSeconds;
-                    Owner.AddForce(new Vector2(0, forceToGetDesiredVelocity));
-                    _physicalState = PhysicalState.Airborne;
+                    if (_jumpWindupBegin.HasValue)
+                    {
+                        if (_jumpWindupBegin.Value >= SettingsManager.PlayerSettings.JumpWindupTime)
+                        {
+                            // Remember positive Y is down
+                            var forceToGetDesiredVelocity = (currentVelocity.Y - SettingsManager.PlayerSettings.JumpVelocity) * mass / (float)iGameTime.ElapsedGameTime.TotalSeconds;
+                            Owner.AddForce(new Vector2(0, forceToGetDesiredVelocity));
+                            _physicalState = PhysicalState.Airborne;
+                        }
+                    }
+                    else
+                    {
+                        _jumpWindupBegin = iGameTime.TotalGameTime;
+                    }
                     break;
                 case PhysicalState.Airborne:
                 case PhysicalState.LandRecovery:
+                    _jumpWindupBegin = null;
                     break;
                 default:
                     Debug.Fail($"Unknown value of enum {nameof(PhysicalState)}: {_physicalState}");

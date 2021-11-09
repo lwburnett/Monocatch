@@ -24,6 +24,7 @@ namespace Monocatch_Lib
             public const float WidthAsFractionOfPlayAreaWidth = .1f;
             public const float HeightAsFractionOfPlayAreaHeight = .016f;
             public const float SpawnHeightAsFractionOfPlayAreaHeight = .75f;
+            public static TimeSpan JumpWindupTime = TimeSpan.FromMilliseconds(200);
         }
 
         public static class BasicProjectileSettings
