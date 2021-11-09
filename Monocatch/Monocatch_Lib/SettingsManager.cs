@@ -15,7 +15,7 @@ namespace Monocatch_Lib
             public const float Mass = 1.0f;
 
             public const float GlideFrictionForce = 50.0f;
-            public const float MovementForce = 50.0f;
+            public const float MovementForce = 85.0f;
             public const float TopHorizontalSpeed = 100.0f;
             // ReSharper disable once InconsistentNaming
             public static TimeSpan RecoveryTime = TimeSpan.FromSeconds(1);
