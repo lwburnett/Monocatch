@@ -147,7 +147,7 @@ namespace Monocatch_Lib.Actors.Components
                 case PhysicalState.Grounded:
                     if (_jumpWindupBegin.HasValue)
                     {
-                        if (_jumpWindupBegin.Value >= SettingsManager.PlayerSettings.JumpWindupTime)
+                        if (iGameTime.TotalGameTime - _jumpWindupBegin.Value >= SettingsManager.PlayerSettings.JumpWindupTime)
                         {
                             // Remember positive Y is down
                             var forceToGetDesiredVelocity = (currentVelocity.Y - SettingsManager.PlayerSettings.JumpVelocity) * mass / (float)iGameTime.ElapsedGameTime.TotalSeconds;
