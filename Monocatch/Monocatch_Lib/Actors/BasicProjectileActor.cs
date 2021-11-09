@@ -40,7 +40,7 @@ namespace Monocatch_Lib.Actors
 
         protected sealed override Texture2D GetTexture() => _texture;
 
-        public override void OnCollision(ActorBase iOtherActor)
+        public override void OnCollision(ActorBase iOtherActor, GameTime iGameTime)
         {
             if (iOtherActor is PlayerActor)
             {
@@ -52,7 +52,7 @@ namespace Monocatch_Lib.Actors
                 SetActorVelocity(new Vector2(-1.0f * currentVelocity.X, currentVelocity.Y));
             }
 
-            base.OnCollision(iOtherActor);
+            base.OnCollision(iOtherActor, iGameTime);
         }
     }
 }

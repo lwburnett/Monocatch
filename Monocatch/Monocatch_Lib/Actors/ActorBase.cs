@@ -72,7 +72,7 @@ namespace Monocatch_Lib.Actors
             _thisFrameForce.Add(iForce);
         }
         
-        public virtual void OnCollision(ActorBase iOtherActor) { }
+        public virtual void OnCollision(ActorBase iOtherActor, GameTime iGameTime) { }
 
         public Vector2 GetActorPosition() => _position;
 

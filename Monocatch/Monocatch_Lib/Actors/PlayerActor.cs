@@ -1,6 +1,7 @@
 ﻿using System.Diagnostics;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
+using Monocatch_Lib.Actors.Components;
 using Monocatch_Lib.Collision;
 
 namespace Monocatch_Lib.Actors
@@ -31,14 +32,26 @@ namespace Monocatch_Lib.Actors
 
         protected override Texture2D GetTexture() => _texture;
 
-        public override void OnCollision(ActorBase iOtherActor)
+        public override void OnCollision(ActorBase iOtherActor, GameTime iGameTime)
         {
-            if (iOtherActor is WallActor)
+            void SignalJumpableCollisionToMovementComponent()
             {
-                SetActorVelocity(new Vector2(-1.05f * GetActorVelocity().X, GetActorVelocity().Y));
+                var movementComponent = GetComponentByType<PlayerMovementComponent>();
+                Debug.Assert(movementComponent != null);
+                movementComponent.SignalJumpableCollision(iGameTime);
             }
 
-            base.OnCollision(iOtherActor);
+            if (iOtherActor is WallActor)
+            {
+                SignalJumpableCollisionToMovementComponent();
+                SetActorVelocity(new Vector2(-1.05f * GetActorVelocity().X, GetActorVelocity().Y));
+            }
+            else if (iOtherActor is BasicProjectileActor)
+            {
+                SignalJumpableCollisionToMovementComponent();
+            }
+
+            base.OnCollision(iOtherActor, iGameTime);
         }
     }
 }

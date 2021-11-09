@@ -13,7 +13,10 @@ namespace Monocatch_Lib.Actors.Components
             _physicalState = PhysicalState.Grounded;
             _floorLocation = 0.0f;
             _lastLandTime = TimeSpan.MinValue;
-            _jumpWindupBegin = null;
+            _groundJumpWindupBegin = null;
+            _lastJumpableCollisionTime = null;
+            _bufferedAirborneJumpActionTime = null;
+            _lastAirborneJumpTime = null;
         }
 
         #region ActorComponentBase
@@ -71,15 +74,30 @@ namespace Monocatch_Lib.Actors.Components
             _thisTickIntendedMovementAction = MovementAction.Right;
         }
 
+        public void SignalJumpableCollision(GameTime iGameTime)
+        {
+            _lastJumpableCollisionTime = iGameTime.TotalGameTime;
+
+            if ((!_lastAirborneJumpTime.HasValue || iGameTime.TotalGameTime - _lastAirborneJumpTime.Value > SettingsManager.PlayerSettings.CollisionJumpTimeProximity) &&
+                (_bufferedAirborneJumpActionTime.HasValue && _lastJumpableCollisionTime - _bufferedAirborneJumpActionTime.Value > SettingsManager.PlayerSettings.CollisionJumpTimeProximity))
+            {
+                Owner.AddForce(GetJumpForce(iGameTime));
+                _lastAirborneJumpTime = iGameTime.TotalGameTime;
+            }
+        }
+
         #region Implementation
 
         private MovementAction _thisTickIntendedMovementAction;
         private PhysicalState _physicalState;
         private float _floorLocation;
         private TimeSpan _lastLandTime;
-        private TimeSpan? _jumpWindupBegin;
+        private TimeSpan? _groundJumpWindupBegin;
+        private TimeSpan? _lastJumpableCollisionTime;
+        private TimeSpan? _bufferedAirborneJumpActionTime;
+        private TimeSpan? _lastAirborneJumpTime;
 
-        #region Helper Enums
+        #region Helper Objects
 
         private enum MovementAction
         {
@@ -120,6 +138,9 @@ namespace Monocatch_Lib.Actors.Components
                 case PhysicalState.LandRecovery:
                     if (iGameTime.TotalGameTime - _lastLandTime > SettingsManager.PlayerSettings.RecoveryTime)
                         _physicalState = PhysicalState.Grounded;
+                    _lastJumpableCollisionTime = null;
+                    _bufferedAirborneJumpActionTime = null;
+                    _lastAirborneJumpTime = null;
                     break;
                 default:
                     Debug.Fail($"Unknown value of enum {nameof(PhysicalState)}: {_physicalState}");
@@ -155,24 +176,33 @@ namespace Monocatch_Lib.Actors.Components
             switch (_physicalState)
             {
                 case PhysicalState.Grounded:
-                    if (_jumpWindupBegin.HasValue)
+                    if (_groundJumpWindupBegin.HasValue)
                     {
-                        if (iGameTime.TotalGameTime - _jumpWindupBegin.Value >= SettingsManager.PlayerSettings.JumpWindupTime)
+                        if (iGameTime.TotalGameTime - _groundJumpWindupBegin.Value >= SettingsManager.PlayerSettings.GroundJumpWindupTime)
                         {
-                            // Remember positive Y is down
-                            var forceToGetDesiredVelocity = (currentVelocity.Y - SettingsManager.PlayerSettings.JumpVelocity) * mass / (float)iGameTime.ElapsedGameTime.TotalSeconds;
-                            Owner.AddForce(new Vector2(0, forceToGetDesiredVelocity));
+                            Owner.AddForce(GetJumpForce(iGameTime));
+                            _groundJumpWindupBegin = null;
                             _physicalState = PhysicalState.Airborne;
                         }
                     }
                     else
                     {
-                        _jumpWindupBegin = iGameTime.TotalGameTime;
+                        _groundJumpWindupBegin = iGameTime.TotalGameTime;
                     }
                     break;
                 case PhysicalState.Airborne:
+                    if (!_lastAirborneJumpTime.HasValue || iGameTime.TotalGameTime - _lastAirborneJumpTime.Value > SettingsManager.PlayerSettings.CollisionJumpTimeProximity)
+                    {
+                        if (_lastJumpableCollisionTime.HasValue && iGameTime.TotalGameTime - _lastJumpableCollisionTime.Value < SettingsManager.PlayerSettings.CollisionJumpTimeProximity)
+                        {
+                            _lastAirborneJumpTime = iGameTime.TotalGameTime;
+                            Owner.AddForce(GetJumpForce(iGameTime) * .5f);
+                        }
+                        else
+                            _bufferedAirborneJumpActionTime = iGameTime.TotalGameTime;
+                    }
+                    break;
                 case PhysicalState.LandRecovery:
-                    _jumpWindupBegin = null;
                     break;
                 default:
                     Debug.Fail($"Unknown value of enum {nameof(PhysicalState)}: {_physicalState}");
@@ -210,6 +240,15 @@ namespace Monocatch_Lib.Actors.Components
             var directionUnitVector = new Vector2(-1 * iCurrentVelocity.X, 0);
             directionUnitVector.Normalize();
             return directionUnitVector * iStoppingForceMag;
+        }
+
+        // Remember positive Y is down
+        private Vector2 GetJumpForce(GameTime iGameTime)
+        {
+            var currentVelocity = Owner.GetActorVelocity();
+            var mass = Owner.GetActorMass();
+
+            return new Vector2(0, (currentVelocity.Y - SettingsManager.PlayerSettings.JumpVelocity) * mass / (float)iGameTime.ElapsedGameTime.TotalSeconds);
         }
 
         #endregion

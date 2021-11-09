@@ -68,8 +68,8 @@ namespace Monocatch_Lib.Collision
                     if (!areColliding) 
                         continue;
 
-                    actor1.OnCollision(actor2);
-                    actor2.OnCollision(actor1);
+                    actor1.OnCollision(actor2, iGameTime);
+                    actor2.OnCollision(actor1, iGameTime);
                 }
             }
         }
