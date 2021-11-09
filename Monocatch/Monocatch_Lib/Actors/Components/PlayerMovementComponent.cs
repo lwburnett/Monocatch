@@ -16,6 +16,8 @@ namespace Monocatch_Lib.Actors.Components
             _jumpWindupBegin = null;
         }
 
+        #region ActorComponentBase
+
         protected sealed override void vUpdate(GameTime iGameTime)
         {
             UpdatePhysicalState(iGameTime);
@@ -47,6 +49,8 @@ namespace Monocatch_Lib.Actors.Components
             base.OnOwnerRegistered();
         }
 
+        #endregion
+
         public void IntendNoneAction()
         {
             _thisTickIntendedMovementAction = MovementAction.Glide;
@@ -67,11 +71,15 @@ namespace Monocatch_Lib.Actors.Components
             _thisTickIntendedMovementAction = MovementAction.Right;
         }
 
+        #region Implementation
+
         private MovementAction _thisTickIntendedMovementAction;
         private PhysicalState _physicalState;
         private float _floorLocation;
         private TimeSpan _lastLandTime;
         private TimeSpan? _jumpWindupBegin;
+
+        #region Helper Enums
 
         private enum MovementAction
         {
@@ -87,6 +95,8 @@ namespace Monocatch_Lib.Actors.Components
             Airborne,
             LandRecovery
         }
+
+        #endregion
 
         private void UpdatePhysicalState(GameTime iGameTime)
         {
@@ -201,5 +211,7 @@ namespace Monocatch_Lib.Actors.Components
             directionUnitVector.Normalize();
             return directionUnitVector * iStoppingForceMag;
         }
+
+        #endregion
     }
 }
