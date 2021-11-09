@@ -8,12 +8,11 @@ namespace Monocatch_Lib.Actors
 {
     public class BasicProjectileActor : ProjectileActorBase
     {
-        public BasicProjectileActor(int iRadius, Color iProjectileColor, Vector2 iPosition, Vector2 iVelocity, GameMaster iGame) : 
-            base(iPosition, iVelocity, SettingsManager.BasicProjectileSettings.Mass, iGame)
+        public BasicProjectileActor(int iRadius, Color iProjectileColor, Vector2 iPosition, Vector2 iVelocity) : 
+            base(iPosition, iVelocity, SettingsManager.BasicProjectileSettings.Mass)
         {
             Debug.Assert(iRadius > 0);
             Debug.Assert(iProjectileColor != Color.Transparent);
-            Debug.Assert(iGame != null);
 
             var diameter = 2 * iRadius;
 
@@ -31,9 +30,8 @@ namespace Monocatch_Lib.Actors
                 }
             }
 
-            _texture = new Texture2D(iGame.GraphicsDevice, diameter, diameter);
+            _texture = GraphicsHelper.CreateTexture(colorData, diameter, diameter);
             _texture.SetData(colorData);
-            SetCollider(new CircleCollider(new Vector2(iPosition.X + iRadius, iPosition.Y + iRadius), iRadius));
         }
 
         private readonly Texture2D _texture;

@@ -5,35 +5,33 @@ using Monocatch_Lib.Ui;
 
 namespace Monocatch_Lib.Screens
 {
-    public class MainMenuScreen : ScreenBase
+    public class MainMenuScreen : IScreen
     {
-        public MainMenuScreen(Action iOnPlayCallback, Action iOnExitCallback, GameMaster iGameMaster) : base(iGameMaster)
+        public MainMenuScreen(Action iOnPlayCallback, Action iOnExitCallback)
         {
             _onPlayCallback = iOnPlayCallback;
             _onExitCallback = iOnExitCallback;
         }
 
-        public override void OnNavigateTo()
+        public void OnNavigateTo()
         {
-            Game.IsMouseVisible = true;
-
-            var gamePlayAreaWidth = Game.GamePlayArea.Width;
-            var gamePlayAreaHeight = Game.GamePlayArea.Height;
+            var gamePlayAreaWidth = GraphicsHelper.GamePlayArea.Width;
+            var gamePlayAreaHeight = GraphicsHelper.GamePlayArea.Height;
 
             var buttonWidth = (int)(gamePlayAreaWidth * SettingsManager.MainMenuSettings.ButtonWidthAsFractionOfPlayAreaWidth);
             var buttonHeight = (int)(gamePlayAreaHeight * SettingsManager.MainMenuSettings.ButtonHeightAsFractionOfPlayAreaHeight);
 
-            var playButtonTopLeftX = Game.GamePlayArea.X + (gamePlayAreaWidth - buttonWidth) / 2;
-            var playButtonTopLeftY = Game.GamePlayArea.Y + (gamePlayAreaHeight - 2 * buttonWidth) / 2;
+            var playButtonTopLeftX = GraphicsHelper.GamePlayArea.X + (gamePlayAreaWidth - buttonWidth) / 2;
+            var playButtonTopLeftY = GraphicsHelper.GamePlayArea.Y + (gamePlayAreaHeight - 2 * buttonWidth) / 2;
 
-            var exitButtonTopLeftX = Game.GamePlayArea.X + (gamePlayAreaWidth - buttonWidth) / 2;
-            var exitButtonTopLeftY = Game.GamePlayArea.Y + (gamePlayAreaHeight + 2 * buttonHeight) / 2;
+            var exitButtonTopLeftX = GraphicsHelper.GamePlayArea.X + (gamePlayAreaWidth - buttonWidth) / 2;
+            var exitButtonTopLeftY = GraphicsHelper.GamePlayArea.Y + (gamePlayAreaHeight + 2 * buttonHeight) / 2;
 
-            _playButton = new UiTextButton(new Point(playButtonTopLeftX, playButtonTopLeftY), buttonWidth, buttonHeight, "Play", OnPlayClicked, Game);
-            _exitButton = new UiTextButton(new Point(exitButtonTopLeftX, exitButtonTopLeftY), buttonWidth, buttonHeight, "Exit", OnExitClicked, Game);
+            _playButton = new UiTextButton(new Point(playButtonTopLeftX, playButtonTopLeftY), buttonWidth, buttonHeight, "Play", OnPlayClicked);
+            _exitButton = new UiTextButton(new Point(exitButtonTopLeftX, exitButtonTopLeftY), buttonWidth, buttonHeight, "Exit", OnExitClicked);
         }
 
-        public override void Update(GameTime iGameTime)
+        public void Update(GameTime iGameTime)
         {
             if (GamePad.GetState(PlayerIndex.One).Buttons.Back == ButtonState.Pressed || Keyboard.GetState().IsKeyDown(Keys.Escape))
                 _onExitCallback();
@@ -75,7 +73,7 @@ namespace Monocatch_Lib.Screens
             }
         }
 
-        public override void Draw()
+        public void Draw()
         {
             _playButton.Draw();
             _exitButton.Draw();

@@ -17,9 +17,7 @@ namespace Monocatch_Lib
 
 
         private ScreenId _currentScreenId;
-        private readonly Dictionary<ScreenId, ScreenBase> _idToScreenDictionary;
-
-        private CollisionManager _collisionManager;
+        private readonly Dictionary<ScreenId, IScreen> _idToScreenDictionary;
 
         public GameMaster()
         {
@@ -27,39 +25,15 @@ namespace Monocatch_Lib
             Content.RootDirectory = "Content";
             IsMouseVisible = true;
             
-            _idToScreenDictionary = new Dictionary<ScreenId, ScreenBase>();
+            _idToScreenDictionary = new Dictionary<ScreenId, IScreen>();
             foreach (var enumValue in Enum.GetValues(typeof(ScreenId)).Cast<ScreenId>())
             {
                 _idToScreenDictionary.Add(enumValue, null);
             }
         }
 
-        public void RegisterCollidableActor(ActorBase iActor)
-        {
-            _collisionManager.Register(iActor);
-        }
-
-        public void UnregisterCollidableActor(ActorBase iActor)
-        {
-            _collisionManager.Unregister(iActor);
-        }
-
-        public void DrawTexture(Texture2D iTexture, Vector2 iPosition)
-        {
-            _spriteBatch.Draw(iTexture, iPosition, Color.White);
-        }
-
-        public void DrawString(SpriteFont iSpriteFont, string iString, Vector2 iPosition, Color iFontColor, float iFontScaling = 24.0f)
-        {
-            _spriteBatch.DrawString(iSpriteFont, iString, iPosition, iFontColor, 0.0f, Vector2.Zero, iFontScaling, SpriteEffects.None, 0.0f);
-        }
-
-        public Rectangle GamePlayArea { get; private set; }
-
         protected override void Initialize()
         {
-            _collisionManager = new CollisionManager();
-
             _graphics.PreferredBackBufferHeight = GraphicsDevice.DisplayMode.Height;
             _graphics.PreferredBackBufferWidth = GraphicsDevice.DisplayMode.Width;
             _graphics.IsFullScreen = true;
@@ -80,10 +54,15 @@ namespace Monocatch_Lib
 
             var topLeftGamePlayAreaX = (int)((windowWidth / 2.0f) - (chosenWidth / 2.0f));
             var topLeftGamePlayAreaY = 0;
-            GamePlayArea = new Rectangle(topLeftGamePlayAreaX, topLeftGamePlayAreaY, chosenWidth, chosenHeight);
+            var gamePlayArea = new Rectangle(topLeftGamePlayAreaX, topLeftGamePlayAreaY, chosenWidth, chosenHeight);
+
+            GraphicsHelper.RegisterContentManager(Content);
+            GraphicsHelper.RegisterGraphicsDevice(GraphicsDevice);
+            GraphicsHelper.RegisterSpriteBatch(_spriteBatch);
+            GraphicsHelper.RegisterGamePlayArea(gamePlayArea);
 
             _currentScreenId = ScreenId.MainMenu;
-            _idToScreenDictionary[_currentScreenId] = new MainMenuScreen(OnPlayGame, OnExitGame, this);
+            _idToScreenDictionary[_currentScreenId] = new MainMenuScreen(OnPlayGame, OnExitGame);
             _idToScreenDictionary[_currentScreenId].OnNavigateTo();
         }
 
@@ -92,7 +71,6 @@ namespace Monocatch_Lib
             _gameTime = gameTime;
 
             _idToScreenDictionary[_currentScreenId].Update(gameTime);
-            _collisionManager.Update(gameTime);
 
             base.Update(gameTime);
         }
@@ -112,10 +90,10 @@ namespace Monocatch_Lib
         private void OnPlayGame()
         {
             var gameStart = _gameTime.TotalGameTime;
-            var gamePlayInstance = new GamePlayInstance(gameStart, this);
+            var gamePlayInstance = new GamePlayInstance(gameStart);
 
             _currentScreenId = ScreenId.GamePlay;
-            _idToScreenDictionary[_currentScreenId] = new GamePlayScreen(gamePlayInstance, OnExitGame, this);
+            _idToScreenDictionary[_currentScreenId] = new GamePlayScreen(gamePlayInstance, OnExitGame);
             _idToScreenDictionary[_currentScreenId].OnNavigateTo();
         }
 

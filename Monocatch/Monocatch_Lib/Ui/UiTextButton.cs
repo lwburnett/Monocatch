@@ -6,14 +6,13 @@ namespace Monocatch_Lib.Ui
 {
     public class UiTextButton
     {
-        public UiTextButton(Point iTopLeft, int iWidth, int iHeight, string iText, Action iOnClickedCallback, GameMaster iGame)
+        public UiTextButton(Point iTopLeft, int iWidth, int iHeight, string iText, Action iOnClickedCallback)
         {
             _topLeft = iTopLeft;
             _width = iWidth;
             _height = iHeight;
             _text = iText;
             _onClickedCallback = iOnClickedCallback;
-            _game = iGame;
 
             var dataSize = _width * _height;
             var colorData1 = new Color[dataSize];
@@ -26,16 +25,11 @@ namespace Monocatch_Lib.Ui
                 colorData3[ii] = Color.Gray;
             }
 
-            _defaultTexture = new Texture2D(iGame.GraphicsDevice, _width, _height);
-            _defaultTexture.SetData(colorData1);
+            _defaultTexture = GraphicsHelper.CreateTexture(colorData1, _width, _height);
+            _overLapTexture = GraphicsHelper.CreateTexture(colorData2, _width, _height);
+            _pressedTexture = GraphicsHelper.CreateTexture(colorData3, _width, _height);
 
-            _overLapTexture = new Texture2D(iGame.GraphicsDevice, _width, _height);
-            _overLapTexture.SetData(colorData2);
-
-            _pressedTexture = new Texture2D(iGame.GraphicsDevice, _width, _height);
-            _pressedTexture.SetData(colorData3);
-
-            _textFont = iGame.Content.Load<SpriteFont>("PrototypeFont");
+            _textFont = GraphicsHelper.LoadContent<SpriteFont>("PrototypeFont");
 
             Reset();
         }
@@ -80,15 +74,15 @@ namespace Monocatch_Lib.Ui
         public void Draw()
         {
             if (!_isOverlapped && !_isPressed)
-                _game.DrawTexture(_defaultTexture, _topLeft.ToVector2());
+                GraphicsHelper.DrawTexture(_defaultTexture, _topLeft.ToVector2());
             else if (_isOverlapped && !_isPressed)
-                _game.DrawTexture(_overLapTexture, _topLeft.ToVector2());
+                GraphicsHelper.DrawTexture(_overLapTexture, _topLeft.ToVector2());
             else
-                _game.DrawTexture(_pressedTexture, _topLeft.ToVector2());
+                GraphicsHelper.DrawTexture(_pressedTexture, _topLeft.ToVector2());
 
             const float scaling = 1.0f;
             var stringDimensions = _textFont.MeasureString(_text) * scaling;
-            _game.DrawString(_textFont, _text, new Vector2(_topLeft.X + (_width - stringDimensions.X) / 2f, _topLeft.Y + (_height - stringDimensions.Y) / 2f), Color.Black, scaling);
+            GraphicsHelper.DrawString(_textFont, _text, new Vector2(_topLeft.X + (_width - stringDimensions.X) / 2f, _topLeft.Y + (_height - stringDimensions.Y) / 2f), Color.Black, scaling);
         }
 
         private Point _topLeft;
@@ -99,7 +93,6 @@ namespace Monocatch_Lib.Ui
         private readonly Texture2D _overLapTexture;
         private readonly Texture2D _pressedTexture;
         private readonly SpriteFont _textFont;
-        private readonly GameMaster _game;
 
         private bool _isPressed;
         private bool _isOverlapped;

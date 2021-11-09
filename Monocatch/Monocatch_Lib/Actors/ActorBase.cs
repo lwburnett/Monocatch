@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
@@ -11,25 +12,19 @@ namespace Monocatch_Lib.Actors
 {
     public abstract class ActorBase
     {
-        protected ActorBase(Vector2 iPosition, Vector2 iVelocity, float iMass, bool iIsCollidable, GameMaster iGame)
+        protected ActorBase(Vector2 iPosition, Vector2 iVelocity, float iMass)
         {
             _position = iPosition;
             _velocity = iVelocity;
             _mass = iMass;
             _thisFrameForce = new FrameForce();
             _components = new List<ActorComponentBase>();
-            _collider = null;
-            _isCollidable = iIsCollidable;
-            Game = iGame;
-
-            if (_isCollidable)
-                iGame.RegisterCollidableActor(this);
         }
 
         public virtual void Update(GameTime iGameTime)
         {
             vUpdate(iGameTime);
-            foreach (var component in _components) 
+            foreach (var component in _components.Where(c => c.UpdateBeforePosition))
                 component.Update(iGameTime);
 
             var elapsedTimeSeconds = (float)iGameTime.ElapsedGameTime.TotalSeconds;
@@ -43,17 +38,20 @@ namespace Monocatch_Lib.Actors
             _position = new Vector2(positionFinalX, positionFinalY);
             _velocity = new Vector2(velocityFinalX, velocityFinalY);
 
-            if (_isCollidable)
-                _collider.SetPosition(_position);
+            foreach (var component in _components.Where(c => !c.UpdateBeforePosition))
+                component.Update(iGameTime);
 
             _thisFrameForce.Reset();
         }
 
         public void Draw()
         {
-            Game.DrawTexture(GetTexture(), _position);
+            GraphicsHelper.DrawTexture(GetTexture(), _position);
 
-            //_collider.DrawDebug(iDrawAction, _game);
+            // Draw debug collider textures
+            var collisionComponent = GetComponentByType<CollisionComponent>();
+            if (collisionComponent != null)
+                collisionComponent.GetCollider().DrawDebug();
         }
 
         public void RegisterComponent(ActorComponentBase ioComponent)
@@ -90,22 +88,11 @@ namespace Monocatch_Lib.Actors
 
         public float GetActorMass() => _mass;
 
-        public ColliderBase GetCollider() => _collider;
-
-        protected void SetCollider(ColliderBase iCollider)
-        {
-            _collider = iCollider;
-        }
-
-        protected GameMaster Game { get; }
-
         private Vector2 _position;
         private Vector2 _velocity;
         private readonly float _mass;
         private readonly FrameForce _thisFrameForce;
         private readonly List<ActorComponentBase> _components;
-        private ColliderBase _collider;
-        private readonly bool _isCollidable;
 
         protected abstract Texture2D GetTexture();
 

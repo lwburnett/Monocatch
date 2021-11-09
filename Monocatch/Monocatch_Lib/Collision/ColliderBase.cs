@@ -1,6 +1,4 @@
-﻿using System;
-using Microsoft.Xna.Framework;
-using Microsoft.Xna.Framework.Graphics;
+﻿using Microsoft.Xna.Framework;
 
 namespace Monocatch_Lib.Collision
 {
@@ -8,6 +6,8 @@ namespace Monocatch_Lib.Collision
     {
         public abstract void SetPosition(Vector2 iNewPosition);
 
-        public abstract void DrawDebug(Action<Texture2D, Vector2> iDrawAction, Game iGame);
+        public abstract Vector2 GetPosition();
+
+        public abstract void DrawDebug();
     }
 }

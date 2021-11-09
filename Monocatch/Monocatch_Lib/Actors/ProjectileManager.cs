@@ -2,23 +2,25 @@
 using System.Collections.Generic;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
+using Monocatch_Lib.Actors.Components;
+using Monocatch_Lib.Collision;
 
 namespace Monocatch_Lib.Actors
 {
     public class ProjectileManager
     {
-        public ProjectileManager(int iStartingHeight, int iBottomBound, int iLeftBound, int iRightBound, GameMaster iGame)
+        public ProjectileManager(int iStartingHeight, int iBottomBound, int iLeftBound, int iRightBound, CollisionManager iCollisionManager)
         {
             _startingHeight = iStartingHeight;
             _bottomBound = iBottomBound;
             _leftXBound = iLeftBound;
             _rightXBound = iRightBound;
             _maxSpawningXSpeed = SettingsManager.ProjectileManagerSettings.MaxXSpeedOnSpawn;
-            _game = iGame;
             _lastSpawn = TimeSpan.Zero;
             _spawnIntervalSeconds = SettingsManager.ProjectileManagerSettings.SpawningInterval;
             _rng = new Random();
             _activeProjectiles = new List<ProjectileActorBase>();
+            _collisionManager = iCollisionManager;
         }
 
         public void Update(GameTime iGameTime)
@@ -29,6 +31,7 @@ namespace Monocatch_Lib.Actors
                 var newProjectile = GetNewProjectile();
                 _activeProjectiles.Add(newProjectile);
                 _lastSpawn = iGameTime.TotalGameTime;
+                _collisionManager.Register(newProjectile);
             }
 
             var ii = 0;
@@ -39,7 +42,7 @@ namespace Monocatch_Lib.Actors
                 if (thisProjectile.IsCaught || thisProjectile.GetActorPosition().Y > _bottomBound)
                 {
                     _activeProjectiles.RemoveAt(ii);
-                    _game.UnregisterCollidableActor(thisProjectile);
+                    _collisionManager.Unregister(thisProjectile);
                 }
                 else
                 {
@@ -59,12 +62,12 @@ namespace Monocatch_Lib.Actors
         private readonly int _leftXBound;
         private readonly int _rightXBound;
         private readonly float _maxSpawningXSpeed;
-        private readonly GameMaster _game;
         private TimeSpan _lastSpawn;
         private readonly TimeSpan _spawnIntervalSeconds;
         private readonly Random _rng;
 
         private readonly List<ProjectileActorBase> _activeProjectiles;
+        private readonly CollisionManager _collisionManager;
 
         private ProjectileActorBase GetNewProjectile()
         {
@@ -73,12 +76,16 @@ namespace Monocatch_Lib.Actors
 
             var spawningSpeedX = (int)((_maxSpawningXSpeed) * (-1.0f + 2.0f * _rng.NextDouble()));
 
-            return new BasicProjectileActor(
+            var actor = new BasicProjectileActor(
                 projectileRadius,
                 Color.White,
                 new Vector2(spawningPositionX, _startingHeight),
-                new Vector2(spawningSpeedX, 0),
-                _game);
+                new Vector2(spawningSpeedX, 0));
+
+            var collider = new CircleCollider(actor.GetActorPosition() + new Vector2(projectileRadius, projectileRadius), projectileRadius);
+            actor.RegisterComponent(new CollisionComponent(collider));
+
+            return actor;
         }
     }
 }

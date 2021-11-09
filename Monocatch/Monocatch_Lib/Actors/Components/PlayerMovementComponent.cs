@@ -7,7 +7,7 @@ namespace Monocatch_Lib.Actors.Components
 {
     public class PlayerMovementComponent : ActorComponentBase
     {
-        public PlayerMovementComponent(GameMaster iGameMaster) : base(iGameMaster)
+        public PlayerMovementComponent() : base(true)
         {
             _thisTickIntendedMovementAction = MovementAction.Glide;
             _physicalState = PhysicalState.Grounded;
@@ -21,7 +21,7 @@ namespace Monocatch_Lib.Actors.Components
 
         #region ActorComponentBase
 
-        protected sealed override void vUpdate(GameTime iGameTime)
+        public sealed override void Update(GameTime iGameTime)
         {
             UpdatePhysicalState(iGameTime);
 
@@ -43,6 +43,8 @@ namespace Monocatch_Lib.Actors.Components
                     Debug.Fail($"Unknown value of enum {nameof(MovementAction)}: {_thisTickIntendedMovementAction}");
                     break;
             }
+
+            base.Update(iGameTime);
         }
 
         protected override void OnOwnerRegistered()

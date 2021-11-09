@@ -19,7 +19,12 @@ namespace Monocatch_Lib.Collision
             Center = new Vector2(iNewPosition.X + Radius, iNewPosition.Y + Radius);
         }
 
-        public override void DrawDebug(Action<Texture2D, Vector2> iDrawAction, Game iGame)
+        public override Vector2 GetPosition()
+        {
+            return Center - new Vector2(Radius, Radius);
+        }
+
+        public override void DrawDebug()
         {
             var diameter = 2 * Radius;
 
@@ -41,10 +46,10 @@ namespace Monocatch_Lib.Collision
                 }
             }
 
-            var texture = new Texture2D(iGame.GraphicsDevice, (int)diameter, (int)diameter);
+            var texture = GraphicsHelper.CreateTexture(colorData, (int)diameter, (int)diameter);
             texture.SetData(colorData);
 
-            iDrawAction(texture, new Vector2(Center.X - Radius, Center.Y - Radius));
+            GraphicsHelper.DrawTexture(texture, new Vector2(Center.X - Radius, Center.Y - Radius));
         }
     }
 }

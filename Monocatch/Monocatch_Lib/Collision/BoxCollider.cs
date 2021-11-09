@@ -52,7 +52,12 @@ namespace Monocatch_Lib.Collision
             Bottom = iNewPosition.Y + Height;
         }
 
-        public override void DrawDebug(Action<Texture2D, Vector2> iDrawAction, Game iGame)
+        public override Vector2 GetPosition()
+        {
+            return new Vector2(Left, Top);
+        }
+
+        public override void DrawDebug()
         {
             var colorData = new Color[(int)Width * (int)Height];
             for (var xx = 0; xx < (int)Height; xx++)
@@ -66,10 +71,10 @@ namespace Monocatch_Lib.Collision
                 }
             }
 
-            var texture = new Texture2D(iGame.GraphicsDevice, (int)Width, (int)Height);
+            var texture = GraphicsHelper.CreateTexture(colorData, (int)Width, (int)Height);
             texture.SetData(colorData);
 
-            iDrawAction(texture, new Vector2(Left, Top));
+            GraphicsHelper.DrawTexture(texture, new Vector2(Left, Top));
         }
     }
 }

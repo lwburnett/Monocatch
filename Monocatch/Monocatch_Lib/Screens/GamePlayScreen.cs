@@ -4,21 +4,20 @@ using Microsoft.Xna.Framework.Input;
 
 namespace Monocatch_Lib.Screens
 {
-    public class GamePlayScreen : ScreenBase
+    public class GamePlayScreen : IScreen
     {
-        public GamePlayScreen(GamePlayInstance iGamePlayInstance, Action iOnExitCallback, GameMaster iGameMaster) : base(iGameMaster)
+        public GamePlayScreen(GamePlayInstance iGamePlayInstance, Action iOnExitCallback)
         {
             _gamePlayInstance = iGamePlayInstance;
             _onExitCallback = iOnExitCallback;
         }
 
-        public override void OnNavigateTo()
+        public void OnNavigateTo()
         {
-            Game.IsMouseVisible = false;
             _gamePlayInstance.LoadLevel();
         }
 
-        public override void Update(GameTime iGameTime)
+        public void Update(GameTime iGameTime)
         {
             if (GamePad.GetState(PlayerIndex.One).Buttons.Back == ButtonState.Pressed || Keyboard.GetState().IsKeyDown(Keys.Escape))
                 _onExitCallback();
@@ -26,7 +25,7 @@ namespace Monocatch_Lib.Screens
             _gamePlayInstance.Update(iGameTime);
         }
 
-        public override void Draw()
+        public void Draw()
         {
             _gamePlayInstance.Draw();
         }

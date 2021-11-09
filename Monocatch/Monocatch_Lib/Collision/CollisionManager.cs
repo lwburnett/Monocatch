@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using Microsoft.Xna.Framework;
 using Monocatch_Lib.Actors;
+using Monocatch_Lib.Actors.Components;
 
 namespace Monocatch_Lib.Collision
 {
@@ -37,8 +38,8 @@ namespace Monocatch_Lib.Collision
                     if (actor1 == actor2)
                         continue;
 
-                    var collider1 = actor1.GetCollider();
-                    var collider2 = actor2.GetCollider();
+                    var collider1 = actor1.GetComponentByType<CollisionComponent>()?.GetCollider();
+                    var collider2 = actor2.GetComponentByType<CollisionComponent>()?.GetCollider();
 
                     Debug.Assert(collider1 != null);
                     Debug.Assert(collider2 != null);

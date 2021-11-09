@@ -8,13 +8,12 @@ namespace Monocatch_Lib.Actors
 {
     public class PlayerActor : ActorBase
     {
-        public PlayerActor(Vector2 iPosition, int iPlayerWidth, int iPlayerHeight, Color iFillColor, GameMaster iGame) : 
-            base(iPosition, Vector2.Zero, SettingsManager.PlayerSettings.Mass, true, iGame)
+        public PlayerActor(Vector2 iPosition, int iPlayerWidth, int iPlayerHeight, Color iFillColor) : 
+            base(iPosition, Vector2.Zero, SettingsManager.PlayerSettings.Mass)
         {
             Debug.Assert(iPlayerWidth > 0);
             Debug.Assert(iPlayerHeight > 0);
             Debug.Assert(iFillColor != Color.Transparent);
-            Debug.Assert(iGame != null);
 
             var colorData = new Color[iPlayerWidth * iPlayerHeight];
             
@@ -23,9 +22,8 @@ namespace Monocatch_Lib.Actors
                 colorData[ii] = iFillColor;
             }
 
-            _texture = new Texture2D(iGame.GraphicsDevice, iPlayerWidth, iPlayerHeight);
+            _texture = GraphicsHelper.CreateTexture(colorData, iPlayerWidth, iPlayerHeight);
             _texture.SetData(colorData);
-            SetCollider(new BoxCollider(iPosition, new Vector2(iPosition.X + iPlayerWidth, iPosition.Y + iPlayerHeight)));
         }
 
         private readonly Texture2D _texture;

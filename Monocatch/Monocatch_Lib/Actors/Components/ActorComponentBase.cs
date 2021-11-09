@@ -5,10 +5,12 @@ namespace Monocatch_Lib.Actors.Components
 {
     public abstract class ActorComponentBase
     {
-        protected ActorComponentBase(GameMaster iGameMaster)
+        protected ActorComponentBase(bool iUpdateBeforePosition)
         {
-            Game = iGameMaster;
+            UpdateBeforePosition = iUpdateBeforePosition;
         }
+
+        public bool UpdateBeforePosition { get; }
 
         public void RegisterOwner(ActorBase iOwner)
         {
@@ -17,16 +19,13 @@ namespace Monocatch_Lib.Actors.Components
         }
         protected ActorBase Owner;
 
-        public void Update(GameTime iGameTime)
+        public virtual void Update(GameTime iGameTime)
         {
             Debug.Assert(Owner != null);
-
-            vUpdate(iGameTime);
         }
-        protected abstract void vUpdate(GameTime iGameTime);
 
-        protected virtual void OnOwnerRegistered() {}
-
-        protected GameMaster Game { get; }
+        protected virtual void OnOwnerRegistered()
+        {
+        }
     }
 }
