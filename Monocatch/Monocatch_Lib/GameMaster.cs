@@ -3,8 +3,6 @@ using System.Collections.Generic;
 using System.Linq;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
-using Monocatch_Lib.Actors;
-using Monocatch_Lib.Collision;
 using Monocatch_Lib.Screens;
 
 namespace Monocatch_Lib
@@ -36,7 +34,7 @@ namespace Monocatch_Lib
         {
             _graphics.PreferredBackBufferHeight = GraphicsDevice.DisplayMode.Height;
             _graphics.PreferredBackBufferWidth = GraphicsDevice.DisplayMode.Width;
-            _graphics.IsFullScreen = false;
+            _graphics.IsFullScreen = true;
             _graphics.ApplyChanges();
 
             base.Initialize();
@@ -81,7 +79,6 @@ namespace Monocatch_Lib
 
             _spriteBatch.Begin();
             _idToScreenDictionary[_currentScreenId].Draw();
-
             _spriteBatch.End();
 
             base.Draw(gameTime);
