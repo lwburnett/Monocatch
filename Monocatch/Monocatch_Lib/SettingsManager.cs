@@ -20,13 +20,13 @@ namespace Monocatch_Lib
             // ReSharper disable once InconsistentNaming
             public static TimeSpan RecoveryTime = TimeSpan.FromSeconds(1);
             public const float GroundJumpVelocity = 100.0f;
+            public const float AirborneJumpVelocityMinimumAsFractionOfGroundJumpVelocity = .75f;
 
             public const float WidthAsFractionOfPlayAreaWidth = .1f;
             public const float HeightAsFractionOfPlayAreaHeight = .016f;
             public const float SpawnHeightAsFractionOfPlayAreaHeight = .75f;
             public static TimeSpan GroundJumpWindupTime = TimeSpan.FromMilliseconds(100);
             public static TimeSpan CollisionJumpTimeProximity = TimeSpan.FromMilliseconds(100);
-            public static float ForceOfCollisionJumpsAsPercentageOfGroundJumpForce = .8f;
         }
 
         public static class BasicProjectileSettings
