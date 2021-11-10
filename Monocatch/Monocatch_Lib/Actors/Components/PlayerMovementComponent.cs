@@ -10,10 +10,12 @@ namespace Monocatch_Lib.Actors.Components
         public PlayerMovementComponent() : base(true)
         {
             _thisTickIntendedMovementAction = MovementAction.Glide;
+            _previousTickIntendedMovementAction = MovementAction.Glide;
             _physicalState = PhysicalState.Grounded;
             _floorLocation = 0.0f;
             _lastLandTime = TimeSpan.MinValue;
             _groundJumpWindupBegin = null;
+            _lastGroundJumpTime = null;
             _lastJumpableCollisionTime = null;
             _bufferedAirborneJumpActionTime = null;
             _lastAirborneJumpTime = null;
@@ -37,7 +39,8 @@ namespace Monocatch_Lib.Actors.Components
                     HandleHorizontalMovement(new Vector2(1.0f, 0), iGameTime);
                     break;
                 case MovementAction.Jump:
-                    HandleJump(iGameTime);
+                    var isUniqueJumpPressInstance = _previousTickIntendedMovementAction != MovementAction.Jump;
+                    HandleJump(isUniqueJumpPressInstance, iGameTime);
                     break;
                 default:
                     Debug.Fail($"Unknown value of enum {nameof(MovementAction)}: {_thisTickIntendedMovementAction}");
@@ -58,21 +61,25 @@ namespace Monocatch_Lib.Actors.Components
 
         public void IntendNoneAction()
         {
+            _previousTickIntendedMovementAction = _thisTickIntendedMovementAction;
             _thisTickIntendedMovementAction = MovementAction.Glide;
         }
 
-        public void IntendBothAction()
+        public void IntendBothAction(GameTime iGameTime)
         {
+            _previousTickIntendedMovementAction = _thisTickIntendedMovementAction;
             _thisTickIntendedMovementAction = MovementAction.Jump;
         }
 
         public void IntendLeftAction()
         {
+            _previousTickIntendedMovementAction = _thisTickIntendedMovementAction;
             _thisTickIntendedMovementAction = MovementAction.Left;
         }
 
         public void IntendRightAction()
         {
+            _previousTickIntendedMovementAction = _thisTickIntendedMovementAction;
             _thisTickIntendedMovementAction = MovementAction.Right;
         }
 
@@ -80,21 +87,34 @@ namespace Monocatch_Lib.Actors.Components
         {
             _lastJumpableCollisionTime = iGameTime.TotalGameTime;
 
-            if ((!_lastAirborneJumpTime.HasValue || iGameTime.TotalGameTime - _lastAirborneJumpTime.Value > SettingsManager.PlayerSettings.CollisionJumpTimeProximity) &&
-                (_bufferedAirborneJumpActionTime.HasValue && _lastJumpableCollisionTime - _bufferedAirborneJumpActionTime.Value > SettingsManager.PlayerSettings.CollisionJumpTimeProximity))
+            // if ((!_lastAirborneJumpTime.HasValue || iGameTime.TotalGameTime - _lastAirborneJumpTime.Value > SettingsManager.PlayerSettings.CollisionJumpTimeProximity) &&
+            //     (_bufferedAirborneJumpActionTime.HasValue && _lastJumpableCollisionTime - _bufferedAirborneJumpActionTime.Value > SettingsManager.PlayerSettings.CollisionJumpTimeProximity))
+            // {
+            //     Owner.AddForce(GetJumpForce(iGameTime));
+            //     _lastAirborneJumpTime = iGameTime.TotalGameTime;
+            // }
+
+            if (iGameTime.TotalGameTime - _lastGroundJumpTime >= SettingsManager.PlayerSettings.CollisionJumpTimeProximity &&
+                (!_lastAirborneJumpTime.HasValue || iGameTime.TotalGameTime - _lastAirborneJumpTime.Value >= SettingsManager.PlayerSettings.CollisionJumpTimeProximity))
             {
-                Owner.AddForce(GetJumpForce(iGameTime));
-                _lastAirborneJumpTime = iGameTime.TotalGameTime;
+                if (_bufferedAirborneJumpActionTime.HasValue && iGameTime.TotalGameTime - _bufferedAirborneJumpActionTime.Value <= SettingsManager.PlayerSettings.CollisionJumpTimeProximity)
+                {
+                    Owner.AddForce(GetJumpForce(iGameTime) * .5f);
+                    _lastAirborneJumpTime = iGameTime.TotalGameTime;
+                    _bufferedAirborneJumpActionTime = null;
+                }
             }
         }
 
         #region Implementation
 
         private MovementAction _thisTickIntendedMovementAction;
+        private MovementAction _previousTickIntendedMovementAction;
         private PhysicalState _physicalState;
         private float _floorLocation;
         private TimeSpan _lastLandTime;
         private TimeSpan? _groundJumpWindupBegin;
+        private TimeSpan? _lastGroundJumpTime;
         private TimeSpan? _lastJumpableCollisionTime;
         private TimeSpan? _bufferedAirborneJumpActionTime;
         private TimeSpan? _lastAirborneJumpTime;
@@ -130,6 +150,10 @@ namespace Monocatch_Lib.Actors.Components
                         Owner.SetActorPosition(new Vector2(Owner.GetActorPosition().X, _floorLocation));
                         Owner.SetActorVelocity(new Vector2(Owner.GetActorVelocity().X, 0.0f));
                         _physicalState = PhysicalState.LandRecovery;
+                        _lastJumpableCollisionTime = null;
+                        _bufferedAirborneJumpActionTime = null;
+                        _lastAirborneJumpTime = null;
+                        _lastGroundJumpTime = null;
                         _lastLandTime = iGameTime.TotalGameTime;
                     }
                     else
@@ -140,9 +164,6 @@ namespace Monocatch_Lib.Actors.Components
                 case PhysicalState.LandRecovery:
                     if (iGameTime.TotalGameTime - _lastLandTime > SettingsManager.PlayerSettings.RecoveryTime)
                         _physicalState = PhysicalState.Grounded;
-                    _lastJumpableCollisionTime = null;
-                    _bufferedAirborneJumpActionTime = null;
-                    _lastAirborneJumpTime = null;
                     break;
                 default:
                     Debug.Fail($"Unknown value of enum {nameof(PhysicalState)}: {_physicalState}");
@@ -170,22 +191,25 @@ namespace Monocatch_Lib.Actors.Components
             Owner.AddForce(GetMovementForce(currentVelocity, iDirectionVector * SettingsManager.PlayerSettings.MovementForce, mass, iGameTime));
         }
 
-        private void HandleJump(GameTime iGameTime)
+        private void HandleJump(bool iIsUniqueJumpPressInstance, GameTime iGameTime)
         {
-            var currentVelocity = Owner.GetActorVelocity();
-            var mass = Owner.GetActorMass();
-
             switch (_physicalState)
             {
                 case PhysicalState.Grounded:
-                    if (_groundJumpWindupBegin.HasValue)
+                    if (!iIsUniqueJumpPressInstance)
                     {
-                        if (iGameTime.TotalGameTime - _groundJumpWindupBegin.Value >= SettingsManager.PlayerSettings.GroundJumpWindupTime)
+                        if (_groundJumpWindupBegin.HasValue)
                         {
-                            Owner.AddForce(GetJumpForce(iGameTime));
-                            _groundJumpWindupBegin = null;
-                            _physicalState = PhysicalState.Airborne;
+                            if (iGameTime.TotalGameTime - _groundJumpWindupBegin.Value >= SettingsManager.PlayerSettings.GroundJumpWindupTime)
+                            {
+                                Owner.AddForce(GetJumpForce(iGameTime));
+                                _groundJumpWindupBegin = null;
+                                _physicalState = PhysicalState.Airborne;
+                                _lastGroundJumpTime = iGameTime.TotalGameTime;
+                            }
                         }
+                        else
+                            HandleGlide();
                     }
                     else
                     {
@@ -193,15 +217,22 @@ namespace Monocatch_Lib.Actors.Components
                     }
                     break;
                 case PhysicalState.Airborne:
-                    if (!_lastAirborneJumpTime.HasValue || iGameTime.TotalGameTime - _lastAirborneJumpTime.Value > SettingsManager.PlayerSettings.CollisionJumpTimeProximity)
+                    if (iIsUniqueJumpPressInstance)
                     {
-                        if (_lastJumpableCollisionTime.HasValue && iGameTime.TotalGameTime - _lastJumpableCollisionTime.Value < SettingsManager.PlayerSettings.CollisionJumpTimeProximity)
+                        if (iGameTime.TotalGameTime - _lastGroundJumpTime >= SettingsManager.PlayerSettings.CollisionJumpTimeProximity &&
+                            (!_lastAirborneJumpTime.HasValue || iGameTime.TotalGameTime - _lastAirborneJumpTime.Value >= SettingsManager.PlayerSettings.CollisionJumpTimeProximity))
                         {
-                            _lastAirborneJumpTime = iGameTime.TotalGameTime;
-                            Owner.AddForce(GetJumpForce(iGameTime) * .5f);
+                            if (_lastJumpableCollisionTime.HasValue && iGameTime.TotalGameTime - _lastJumpableCollisionTime.Value <= SettingsManager.PlayerSettings.CollisionJumpTimeProximity)
+                            {
+                                _lastAirborneJumpTime = iGameTime.TotalGameTime;
+                                _bufferedAirborneJumpActionTime = null;
+                                Owner.AddForce(GetJumpForce(iGameTime) * .5f);
+                            }
+                            else
+                            {
+                                _bufferedAirborneJumpActionTime = iGameTime.TotalGameTime;
+                            }
                         }
-                        else
-                            _bufferedAirborneJumpActionTime = iGameTime.TotalGameTime;
                     }
                     break;
                 case PhysicalState.LandRecovery:

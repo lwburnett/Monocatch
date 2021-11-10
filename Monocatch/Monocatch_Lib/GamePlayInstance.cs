@@ -49,7 +49,7 @@ namespace Monocatch_Lib
 
         public void Update(GameTime iGameTime)
         {
-            HandleInput();
+            HandleInput(iGameTime);
 
             var adjustedGameTime = new GameTime(
                 iGameTime.TotalGameTime - _gameStart, 
@@ -100,7 +100,7 @@ namespace Monocatch_Lib
         }
 
         // Using this in place of a player controller because of this game's simplicity
-        private void HandleInput()
+        private void HandleInput(GameTime iGameTime)
         {
             var playerMovementComponent = _player.GetComponentByType<PlayerMovementComponent>();
 
@@ -117,7 +117,7 @@ namespace Monocatch_Lib
 
             if (isLeftDown && isRightDown)
             {
-                playerMovementComponent.IntendBothAction();
+                playerMovementComponent.IntendBothAction(iGameTime);
                 return;
             }
 

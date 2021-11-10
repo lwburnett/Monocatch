@@ -49,9 +49,9 @@ namespace Monocatch_Lib.Actors
             GraphicsHelper.DrawTexture(GetTexture(), _position);
 
             // Draw debug collider textures
-            var collisionComponent = GetComponentByType<CollisionComponent>();
-            if (collisionComponent != null)
-                collisionComponent.GetCollider().DrawDebug();
+            // var collisionComponent = GetComponentByType<CollisionComponent>();
+            // if (collisionComponent != null)
+            //     collisionComponent.GetCollider().DrawDebug();
         }
 
         public void RegisterComponent(ActorComponentBase ioComponent)
