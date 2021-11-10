@@ -99,7 +99,7 @@ namespace Monocatch_Lib.Actors.Components
             {
                 if (_bufferedAirborneJumpActionTime.HasValue && iGameTime.TotalGameTime - _bufferedAirborneJumpActionTime.Value <= SettingsManager.PlayerSettings.CollisionJumpTimeProximity)
                 {
-                    Owner.AddForce(GetJumpForce(iGameTime) * .5f);
+                    Owner.AddForce(GetJumpForce(iGameTime) * SettingsManager.PlayerSettings.ForceOfCollisionJumpsAsPercentageOfGroundJumpForce);
                     _lastAirborneJumpTime = iGameTime.TotalGameTime;
                     _bufferedAirborneJumpActionTime = null;
                 }
@@ -226,7 +226,7 @@ namespace Monocatch_Lib.Actors.Components
                             {
                                 _lastAirborneJumpTime = iGameTime.TotalGameTime;
                                 _bufferedAirborneJumpActionTime = null;
-                                Owner.AddForce(GetJumpForce(iGameTime) * .5f);
+                                Owner.AddForce(GetJumpForce(iGameTime) * SettingsManager.PlayerSettings.ForceOfCollisionJumpsAsPercentageOfGroundJumpForce);
                             }
                             else
                             {
@@ -281,7 +281,7 @@ namespace Monocatch_Lib.Actors.Components
             var currentVelocity = Owner.GetActorVelocity();
             var mass = Owner.GetActorMass();
 
-            return new Vector2(0, (currentVelocity.Y - SettingsManager.PlayerSettings.JumpVelocity) * mass / (float)iGameTime.ElapsedGameTime.TotalSeconds);
+            return new Vector2(0, (currentVelocity.Y - SettingsManager.PlayerSettings.GroundJumpVelocity) * mass / (float)iGameTime.ElapsedGameTime.TotalSeconds);
         }
 
         #endregion
