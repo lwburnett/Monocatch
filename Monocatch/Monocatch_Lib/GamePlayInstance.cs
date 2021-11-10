@@ -117,7 +117,7 @@ namespace Monocatch_Lib
 
             if (isLeftDown && isRightDown)
             {
-                playerMovementComponent.IntendBothAction(iGameTime);
+                playerMovementComponent.IntendBothAction();
                 return;
             }
 

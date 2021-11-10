@@ -61,26 +61,22 @@ namespace Monocatch_Lib.Actors.Components
 
         public void IntendNoneAction()
         {
-            _previousTickIntendedMovementAction = _thisTickIntendedMovementAction;
-            _thisTickIntendedMovementAction = MovementAction.Glide;
+            UpdateThisTickIntendedAction(MovementAction.Glide);
         }
 
-        public void IntendBothAction(GameTime iGameTime)
+        public void IntendBothAction()
         {
-            _previousTickIntendedMovementAction = _thisTickIntendedMovementAction;
-            _thisTickIntendedMovementAction = MovementAction.Jump;
+            UpdateThisTickIntendedAction(MovementAction.Jump);
         }
 
         public void IntendLeftAction()
         {
-            _previousTickIntendedMovementAction = _thisTickIntendedMovementAction;
-            _thisTickIntendedMovementAction = MovementAction.Left;
+            UpdateThisTickIntendedAction(MovementAction.Left);
         }
 
         public void IntendRightAction()
         {
-            _previousTickIntendedMovementAction = _thisTickIntendedMovementAction;
-            _thisTickIntendedMovementAction = MovementAction.Right;
+            UpdateThisTickIntendedAction(MovementAction.Right);
         }
 
         public void SignalJumpableCollision(GameTime iGameTime)
@@ -137,6 +133,12 @@ namespace Monocatch_Lib.Actors.Components
         }
 
         #endregion
+
+        void UpdateThisTickIntendedAction(MovementAction iThisTickAction)
+        {
+            _previousTickIntendedMovementAction = _thisTickIntendedMovementAction;
+            _thisTickIntendedMovementAction = iThisTickAction;
+        }
 
         private void UpdatePhysicalState(GameTime iGameTime)
         {
