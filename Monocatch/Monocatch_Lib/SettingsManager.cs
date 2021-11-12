@@ -13,24 +13,29 @@ namespace Monocatch_Lib
         public static class PlayerSettings
         {
             public const float Mass = 1.0f;
-
-            
+            public const float WidthAsFractionOfPlayAreaWidth = .1f;
+            public const float HeightAsFractionOfPlayAreaHeight = .016f;
+            public const float SpawnHeightAsFractionOfPlayAreaHeight = .75f;
 
             public static class Movement
             {
-                public const float GlideFrictionForce = 50.0f;
-                public const float MovementForce = 100.0f;
-                public const float TopHorizontalSpeed = 100.0f;
-                // ReSharper disable once InconsistentNaming
-                public static TimeSpan RecoveryTime = TimeSpan.FromSeconds(0);
-                public const float GroundJumpVelocity = 150.0f;
-                public const float AirborneJumpVelocityMinimumAsFractionOfGroundJumpVelocity = .75f;
+                public static class Ground
+                {
 
-                public const float WidthAsFractionOfPlayAreaWidth = .1f;
-                public const float HeightAsFractionOfPlayAreaHeight = .016f;
-                public const float SpawnHeightAsFractionOfPlayAreaHeight = .75f;
-                public static TimeSpan GroundJumpWindupTime = TimeSpan.FromMilliseconds(100);
-                public static TimeSpan CollisionJumpTimeProximity = TimeSpan.FromMilliseconds(100);
+                    public const float GlideFrictionForce = 50.0f;
+                    public const float MovementForce = 100.0f;
+                    public const float TopHorizontalSpeed = 100.0f;
+                    // ReSharper disable once InconsistentNaming
+                    public static TimeSpan RecoveryTime = TimeSpan.FromSeconds(0);
+                    public const float JumpVelocity = 150.0f;
+                    public static TimeSpan JumpWindupTime = TimeSpan.FromMilliseconds(100);
+                }
+
+                public static class Airborne
+                {
+                    public const float JumpVelocityMinimum = Ground.JumpVelocity * .75f;
+                    public static TimeSpan CollisionJumpTimeProximity = TimeSpan.FromMilliseconds(100);
+                }
             }
         }
 
