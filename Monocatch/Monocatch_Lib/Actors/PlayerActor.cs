@@ -42,7 +42,7 @@ namespace Monocatch_Lib.Actors
             if (iOtherActor is WallActor)
             {
                 SignalJumpableCollisionToMovementComponent();
-                SetActorVelocity(new Vector2(-1.05f * GetActorVelocity().X, GetActorVelocity().Y));
+                SetActorVelocity(new Vector2(-1.00f * GetActorVelocity().X, GetActorVelocity().Y));
             }
             else if (iOtherActor is BasicProjectileActor)
             {

@@ -179,7 +179,7 @@ namespace Monocatch_Lib.Actors.Components
             if (_physicalState != PhysicalState.Airborne)
             {
                 var currentVelocity = Owner.GetActorVelocity();
-                Owner.AddForce(GetStoppingForce(currentVelocity, SettingsManager.PlayerSettings.Movement.Ground.GlideFrictionForce));
+                Owner.AddForce(GetStoppingForce(currentVelocity, SettingsManager.PlayerSettings.Movement.Ground.GlideFrictionXForce));
             }
         }
 
@@ -191,7 +191,55 @@ namespace Monocatch_Lib.Actors.Components
             var currentVelocity = Owner.GetActorVelocity();
             var mass = Owner.GetActorMass();
 
-            Owner.AddForce(GetMovementForce(currentVelocity, iDirectionVector * SettingsManager.PlayerSettings.Movement.Ground.MovementForce, mass, iGameTime));
+            switch (_physicalState)
+            {
+                case PhysicalState.Grounded:
+                case PhysicalState.LandRecovery:
+                    Owner.AddForce(GetMovementForce(
+                        currentVelocity, 
+                        SettingsManager.PlayerSettings.Movement.Ground.TopXSpeed, 
+                        iDirectionVector * SettingsManager.PlayerSettings.Movement.Ground.MovementXForce, 
+                        mass, 
+                        iGameTime));
+                    break;
+                case PhysicalState.Airborne:
+                    if (!_lastAirborneJumpTime.HasValue || iGameTime.TotalGameTime - _lastAirborneJumpTime.Value > SettingsManager.PlayerSettings.Movement.Airborne.PostJumpBonusTimeSpan)
+                    {
+                        if (Math.Abs(currentVelocity.X) <= SettingsManager.PlayerSettings.Movement.Ground.TopXSpeed)
+                        {
+                            Owner.AddForce(GetMovementForce(
+                                currentVelocity, 
+                                SettingsManager.PlayerSettings.Movement.Ground.TopXSpeed,
+                                iDirectionVector * SettingsManager.PlayerSettings.Movement.Ground.MovementXForce, 
+                                mass, 
+                                iGameTime));
+                        }
+                        else
+                        {
+                            var areInputDirectionsAntiparallel = Vector2.Dot(iDirectionVector, currentVelocity) < 0;
+                            if (areInputDirectionsAntiparallel)
+                            {
+                                Owner.AddForce(iDirectionVector * SettingsManager.PlayerSettings.Movement.Ground.MovementXForce);
+                            }
+                            else
+                            {
+                                Owner.AddForce(-1.0f * iDirectionVector * SettingsManager.PlayerSettings.Movement.Airborne.PostJumpBonusDecayForce);
+                            }
+                        }
+                    }
+                    else
+                    {
+                        Owner.AddForce(GetMovementForce(
+                            currentVelocity,
+                            SettingsManager.PlayerSettings.Movement.Airborne.PostJumpBonusHorizontalMovementTopSpeed,
+                            iDirectionVector * SettingsManager.PlayerSettings.Movement.Airborne.PostJumpBonusHorizontalMovementForce,
+                            mass,
+                            iGameTime));
+                    }
+                    break;
+                default:
+                    throw new ArgumentOutOfRangeException();
+            }
         }
 
         private void HandleJump(bool iIsUniqueJumpPressInstance, GameTime iGameTime)
@@ -205,7 +253,7 @@ namespace Monocatch_Lib.Actors.Components
                         {
                             if (iGameTime.TotalGameTime - _groundJumpWindupBegin.Value >= SettingsManager.PlayerSettings.Movement.Ground.JumpWindupTime)
                             {
-                                Owner.SetActorVelocity(new Vector2(Owner.GetActorVelocity().X, -1.0f * SettingsManager.PlayerSettings.Movement.Ground.JumpVelocity));
+                                Owner.SetActorVelocity(new Vector2(Owner.GetActorVelocity().X, -1.0f * SettingsManager.PlayerSettings.Movement.Ground.JumpYVelocity));
                                 _groundJumpWindupBegin = null;
                                 _physicalState = PhysicalState.Airborne;
                                 _lastGroundJumpTime = iGameTime.TotalGameTime;
@@ -249,42 +297,51 @@ namespace Monocatch_Lib.Actors.Components
 
         private Vector2 GetAirborneJumpVelocity()
         {
+            float GetXSpeed(float iCurrentXSpeed) =>
+                iCurrentXSpeed * SettingsManager.PlayerSettings.Movement.Airborne.PostJumpBonusHorizontalMovementTopSpeed / SettingsManager.PlayerSettings.Movement.Ground.TopXSpeed;
+
+            float GetYSpeed(float iCurrentYSpeed)
+            {
+                var yVelocityCeiling = -1.0f * SettingsManager.PlayerSettings.Movement.Airborne.JumpYVelocityMinimum;
+                var yVelocityFloor = -1.0f * SettingsManager.PlayerSettings.Movement.Ground.JumpYVelocity;
+
+                if (iCurrentYSpeed > yVelocityCeiling)
+                    return yVelocityCeiling;
+                if (iCurrentYSpeed < yVelocityFloor)
+                    return Owner.GetActorVelocity().Y;
+
+                // f(x) = ax^2 + bx + c polynomial scaling between max and min exit Y velocities where:
+                // f(0) = ceiling
+                // f(floor) = floor
+                // f'(floor) = 0
+                //
+                // Solving these equations gives:
+                // a = ceiling / (floor^2) - 1 / floor
+                // b = 2 - (2 ceiling) / floor
+                // c = ceiling
+                var aCoefficient = (yVelocityCeiling / yVelocityFloor / yVelocityFloor) - (1.0f / yVelocityFloor);
+                var bCoefficient = 2 - (2 * yVelocityCeiling / yVelocityFloor);
+                var cCoefficient = yVelocityCeiling;
+
+                var newYVelocity = aCoefficient * aCoefficient * iCurrentYSpeed + bCoefficient * iCurrentYSpeed + cCoefficient;
+
+                return newYVelocity;
+            }
+
+            var currentXVelocity = Owner.GetActorVelocity().X;
             var currentYVelocity = Owner.GetActorVelocity().Y;
 
-            var yVelocityCeiling = -1.0f * SettingsManager.PlayerSettings.Movement.Airborne.JumpVelocityMinimum;
-            var yVelocityFloor = -1.0f * SettingsManager.PlayerSettings.Movement.Ground.JumpVelocity;
-
-            if (currentYVelocity > yVelocityCeiling)
-                return new Vector2(Owner.GetActorVelocity().X, yVelocityCeiling);
-            if (currentYVelocity < yVelocityFloor)
-                return Owner.GetActorVelocity();
-
-            // f(x) = ax^2 + bx + c polynomial scaling between max and min exit velocities where:
-            // f(0) = ceiling
-            // f(floor) = floor
-            // f'(floor) = 0
-            //
-            // Solving these equations gives:
-            // a = ceiling / (floor^2) - 1 / floor
-            // b = 2 - (2 ceiling) / floor
-            // c = ceiling
-            var aCoefficient = (yVelocityCeiling / yVelocityFloor / yVelocityFloor) - (1.0f / yVelocityFloor);
-            var bCoefficient = 2 - (2 * yVelocityCeiling / yVelocityFloor);
-            var cCoefficient = yVelocityCeiling;
-
-            var newYVelocity = aCoefficient * aCoefficient * currentYVelocity + bCoefficient * currentYVelocity + cCoefficient;
-
-            return new Vector2(Owner.GetActorVelocity().X, newYVelocity);
+            return new Vector2(GetXSpeed(currentXVelocity), GetYSpeed(currentYVelocity));
         }
 
         // What happens if current velocity is greater than top speed?
-        private static Vector2 GetMovementForce(Vector2 iCurrentVelocity, Vector2 iMovementForce, float iMass, GameTime iGameTime)
+        private static Vector2 GetMovementForce(Vector2 iCurrentVelocity, float iTopHorizontalSpeed, Vector2 iMovementForce, float iMass, GameTime iGameTime)
         {
-            if (iCurrentVelocity.Length() < SettingsManager.PlayerSettings.Movement.Ground.TopHorizontalSpeed)
+            if (Math.Abs(iCurrentVelocity.X) < iTopHorizontalSpeed)
             {
                 var movementForceDirection = iMovementForce;
                 movementForceDirection.Normalize();
-                var forceToTopSpeedThisTick = (SettingsManager.PlayerSettings.Movement.Ground.TopHorizontalSpeed * movementForceDirection - iCurrentVelocity) * iMass / (float)iGameTime.ElapsedGameTime.TotalSeconds;
+                var forceToTopSpeedThisTick = (iTopHorizontalSpeed * movementForceDirection - iCurrentVelocity) * iMass / (float)iGameTime.ElapsedGameTime.TotalSeconds;
 
                 return (Math.Abs(iMovementForce.Length()) < Math.Abs(forceToTopSpeedThisTick.Length())) ?
                     iMovementForce :
@@ -295,7 +352,7 @@ namespace Monocatch_Lib.Actors.Components
                 var potentialFinalVelocity = iMovementForce * (float)iGameTime.ElapsedGameTime.TotalSeconds / iMass + iCurrentVelocity;
                 var potentialSpeed = potentialFinalVelocity.Length();
 
-                return potentialSpeed < iCurrentVelocity.Length() ? iMovementForce : Vector2.Zero;
+                return potentialSpeed < Math.Abs(iCurrentVelocity.X) ? iMovementForce : Vector2.Zero;
             }
         }
 

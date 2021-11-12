@@ -22,19 +22,23 @@ namespace Monocatch_Lib
                 public static class Ground
                 {
 
-                    public const float GlideFrictionForce = 50.0f;
-                    public const float MovementForce = 100.0f;
-                    public const float TopHorizontalSpeed = 100.0f;
+                    public const float GlideFrictionXForce = 50.0f;
+                    public const float MovementXForce = 100.0f;
+                    public const float TopXSpeed = 100.0f;
                     // ReSharper disable once InconsistentNaming
                     public static TimeSpan RecoveryTime = TimeSpan.FromSeconds(0);
-                    public const float JumpVelocity = 150.0f;
+                    public const float JumpYVelocity = 150.0f;
                     public static TimeSpan JumpWindupTime = TimeSpan.FromMilliseconds(100);
                 }
 
                 public static class Airborne
                 {
-                    public const float JumpVelocityMinimum = Ground.JumpVelocity * .75f;
+                    public const float JumpYVelocityMinimum = Ground.JumpYVelocity * .75f;
                     public static TimeSpan CollisionJumpTimeProximity = TimeSpan.FromMilliseconds(100);
+                    public const float PostJumpBonusHorizontalMovementForce = 125.0f;
+                    public const float PostJumpBonusHorizontalMovementTopSpeed = 125.0f;
+                    public static TimeSpan PostJumpBonusTimeSpan = TimeSpan.FromSeconds(1.5);
+                    public const float PostJumpBonusDecayForce = 100.0f;
                 }
             }
         }
