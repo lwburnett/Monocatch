@@ -35,7 +35,7 @@ namespace Monocatch_Lib
                 {
                     public const float JumpYVelocityMinimum = Ground.JumpYVelocity * .75f;
                     public static TimeSpan CollisionJumpTimeProximity = TimeSpan.FromMilliseconds(100);
-                    public const float PostJumpBonusHorizontalMovementForce = 125.0f;
+                    public const float PostJumpBonusHorizontalMovementForce = 150.0f;
                     public const float PostJumpBonusHorizontalMovementTopSpeed = 125.0f;
                     public static TimeSpan PostJumpBonusTimeSpan = TimeSpan.FromSeconds(1.5);
                     public const float PostJumpBonusDecayForce = 100.0f;
