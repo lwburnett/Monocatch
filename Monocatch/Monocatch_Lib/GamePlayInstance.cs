@@ -81,10 +81,10 @@ namespace Monocatch_Lib
         {
             var playArea = GraphicsHelper.GamePlayArea;
 
-            var playerWidth = (int)(playArea.Width * SettingsManager.PlayerSettings.WidthAsFractionOfPlayAreaWidth);
-            var playerHeight = (int)(playArea.Height * SettingsManager.PlayerSettings.HeightAsFractionOfPlayAreaHeight);
+            var playerWidth = (int)(playArea.Width * SettingsManager.PlayerSettings.Movement.WidthAsFractionOfPlayAreaWidth);
+            var playerHeight = (int)(playArea.Height * SettingsManager.PlayerSettings.Movement.HeightAsFractionOfPlayAreaHeight);
             var playerTopLeftX = (int)(playArea.X + playArea.Width / 2.0f - playerWidth / 2.0f);
-            var playerTopLeftY = (int)(playArea.Y + playArea.Height * SettingsManager.PlayerSettings.SpawnHeightAsFractionOfPlayAreaHeight - playerHeight / 2.0f);
+            var playerTopLeftY = (int)(playArea.Y + playArea.Height * SettingsManager.PlayerSettings.Movement.SpawnHeightAsFractionOfPlayAreaHeight - playerHeight / 2.0f);
             _player = new PlayerActor(
                 new Vector2(playerTopLeftX, playerTopLeftY),
                 playerWidth,
