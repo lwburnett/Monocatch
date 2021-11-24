@@ -5,10 +5,10 @@ using Microsoft.Xna.Framework.Graphics;
 
 namespace Monocatch_Lib.Actors
 {
-    public class BasicProjectileActor : ProjectileActorBase
+    public class BadProjectileActor : ProjectileActorBase
     {
-        public BasicProjectileActor(int iRadius, Color iProjectileColor, Vector2 iPosition, Vector2 iVelocity) : 
-            base(iPosition, iVelocity, SettingsManager.BasicProjectileSettings.Mass)
+        public BadProjectileActor(int iRadius, Color iProjectileColor, Vector2 iPosition, Vector2 iVelocity) : 
+            base(iPosition, iVelocity, SettingsManager.BadProjectileSettings.Mass)
         {
             Debug.Assert(iRadius > 0);
             Debug.Assert(iProjectileColor != Color.Transparent);
@@ -16,7 +16,7 @@ namespace Monocatch_Lib.Actors
             var diameter = 2 * iRadius;
 
             var colorData = new Color[diameter * diameter];
-            
+
             for (var xx = 0; xx < diameter; xx++)
             {
                 for (var yy = 0; yy < diameter; yy++)
@@ -36,6 +36,8 @@ namespace Monocatch_Lib.Actors
         private readonly Texture2D _texture;
 
         protected sealed override Texture2D GetTexture() => _texture;
+
+
 
         public override void OnCollision(ActorBase iOtherActor, GameTime iGameTime)
         {

@@ -48,6 +48,11 @@ namespace Monocatch_Lib
             public const float Mass = 1.0f;
         }
 
+        public static class BadProjectileSettings
+        {
+            public const float Mass = 1.0f;
+        }
+
         public static class WorldSettings
         {
             public static Vector2 GravityForce = new Vector2(0.0f, 100.0f);

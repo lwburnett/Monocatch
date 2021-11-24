@@ -103,6 +103,11 @@ namespace Monocatch_Lib.Actors.Components
             }
         }
 
+        public void SignalBadCollision(GameTime iGameTime)
+        {
+            throw new NotImplementedException();
+        }
+
         #region Implementation
 
         private MovementAction _thisTickIntendedMovementAction;
@@ -135,7 +140,7 @@ namespace Monocatch_Lib.Actors.Components
 
         #endregion
 
-        void UpdateThisTickIntendedAction(MovementAction iThisTickAction)
+        private void UpdateThisTickIntendedAction(MovementAction iThisTickAction)
         {
             _previousTickIntendedMovementAction = _thisTickIntendedMovementAction;
             _thisTickIntendedMovementAction = iThisTickAction;

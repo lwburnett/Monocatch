@@ -48,6 +48,12 @@ namespace Monocatch_Lib.Actors
             {
                 SignalJumpableCollisionToMovementComponent();
             }
+            else if (iOtherActor is BadProjectileActor)
+            {
+                var movementComponent = GetComponentByType<PlayerMovementComponent>();
+                Debug.Assert(movementComponent != null);
+                movementComponent.SignalBadCollision(iGameTime);
+            }
 
             base.OnCollision(iOtherActor, iGameTime);
         }

@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using Microsoft.Xna.Framework;
-using Microsoft.Xna.Framework.Graphics;
 using Monocatch_Lib.Actors.Components;
 using Monocatch_Lib.Collision;
 
@@ -76,11 +75,19 @@ namespace Monocatch_Lib.Actors
 
             var spawningSpeedX = (int)((_maxSpawningXSpeed) * (-1.0f + 2.0f * _rng.NextDouble()));
 
-            var actor = new BasicProjectileActor(
-                projectileRadius,
-                Color.White,
-                new Vector2(spawningPositionX, _startingHeight),
-                new Vector2(spawningSpeedX, 0));
+            ProjectileActorBase actor;
+            if (_rng.Next() % 10 != 0)
+                actor = new BasicProjectileActor(
+                    projectileRadius,
+                    Color.White,
+                    new Vector2(spawningPositionX, _startingHeight),
+                    new Vector2(spawningSpeedX, 0));
+            else
+                actor = new BadProjectileActor(
+                    projectileRadius,
+                    Color.OrangeRed,
+                    new Vector2(spawningPositionX, _startingHeight),
+                    new Vector2(spawningSpeedX, 0));
 
             var collider = new CircleCollider(actor.GetActorPosition() + new Vector2(projectileRadius, projectileRadius), projectileRadius);
             actor.RegisterComponent(new CollisionComponent(collider));
