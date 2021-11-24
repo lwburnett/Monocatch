@@ -40,6 +40,8 @@ namespace Monocatch_Lib
                     public static TimeSpan PostJumpBonusTimeSpan = TimeSpan.FromSeconds(1.5);
                     public const float PostJumpBonusDecayForce = 100.0f;
                 }
+
+                public static TimeSpan BadCollisionRecovery = TimeSpan.FromSeconds(1);
             }
         }
 

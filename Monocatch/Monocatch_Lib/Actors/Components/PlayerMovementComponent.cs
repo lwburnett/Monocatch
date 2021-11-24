@@ -19,6 +19,7 @@ namespace Monocatch_Lib.Actors.Components
             _lastJumpableCollisionTime = null;
             _bufferedAirborneJumpActionTime = null;
             _lastAirborneJumpTime = null;
+            _lastBadCollisionTime = null;
         }
 
         #region ActorComponentBase
@@ -95,7 +96,6 @@ namespace Monocatch_Lib.Actors.Components
             {
                 if (_bufferedAirborneJumpActionTime.HasValue && iGameTime.TotalGameTime - _bufferedAirborneJumpActionTime.Value <= SettingsManager.PlayerSettings.Movement.Airborne.CollisionJumpTimeProximity)
                 {
-                    //Owner.AddForce(GetJumpForce(iGameTime) * SettingsManager.PlayerSettings.ForceOfCollisionJumpsAsPercentageOfGroundJumpForce);
                     Owner.SetActorVelocity(GetAirborneJumpVelocity());
                     _lastAirborneJumpTime = iGameTime.TotalGameTime;
                     _bufferedAirborneJumpActionTime = null;
@@ -105,7 +105,7 @@ namespace Monocatch_Lib.Actors.Components
 
         public void SignalBadCollision(GameTime iGameTime)
         {
-            throw new NotImplementedException();
+            _lastBadCollisionTime = iGameTime.TotalGameTime;
         }
 
         #region Implementation
@@ -120,6 +120,8 @@ namespace Monocatch_Lib.Actors.Components
         private TimeSpan? _lastJumpableCollisionTime;
         private TimeSpan? _bufferedAirborneJumpActionTime;
         private TimeSpan? _lastAirborneJumpTime;
+        private TimeSpan? _lastBadCollisionTime;
+
 
         #region Helper Objects
 
@@ -190,6 +192,10 @@ namespace Monocatch_Lib.Actors.Components
 
         private void HandleHorizontalMovement(Vector2 iDirectionVector, GameTime iGameTime)
         {
+            // If recent bad collision, ignore horizontal movement
+            if (_lastBadCollisionTime.HasValue && iGameTime.TotalGameTime - _lastBadCollisionTime.Value < SettingsManager.PlayerSettings.Movement.BadCollisionRecovery)
+                return;
+
             iDirectionVector.Normalize();
             Debug.Assert(iDirectionVector.Y == 0.0f, "Assuming perfectly horizontal vector");
 
@@ -249,6 +255,10 @@ namespace Monocatch_Lib.Actors.Components
 
         private void HandleJump(bool iIsUniqueJumpPressInstance, GameTime iGameTime)
         {
+            // If recent bad collision, ignore jumping
+            if (_lastBadCollisionTime.HasValue && iGameTime.TotalGameTime - _lastBadCollisionTime.Value < SettingsManager.PlayerSettings.Movement.BadCollisionRecovery)
+                return;
+
             switch (_physicalState)
             {
                 case PhysicalState.Grounded:
