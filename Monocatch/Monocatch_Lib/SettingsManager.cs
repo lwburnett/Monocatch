@@ -15,7 +15,6 @@ namespace Monocatch_Lib
             public const float Mass = 1.0f;
             public const float WidthAsFractionOfPlayAreaWidth = .1f;
             public const float HeightAsFractionOfPlayAreaHeight = .016f;
-            public const float SpawnHeightAsFractionOfPlayAreaHeight = .75f;
 
             public static class Movement
             {
@@ -58,6 +57,7 @@ namespace Monocatch_Lib
         public static class WorldSettings
         {
             public static Vector2 GravityForce = new Vector2(0.0f, 100.0f);
+            public const float FloorLocationYAsFractionOfPlayAreaHeight = .75f;
         }
 
         public static class WallSettings

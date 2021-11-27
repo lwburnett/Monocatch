@@ -40,7 +40,11 @@ namespace Monocatch_Lib
             _rightWall = new WallActor(rightWallTopLeft, rightWallBottomRight, Color.LightSlateGray);
             _rightWall.RegisterComponent(new CollisionComponent(new BoxCollider(rightWallTopLeft.ToVector2(), rightWallBottomRight.ToVector2())));
 
-            LoadPlayer();
+            var bottomWallTopLeft = new Point(gamePlayArea.X + wallWidth, (int)(SettingsManager.WorldSettings.FloorLocationYAsFractionOfPlayAreaHeight * gamePlayArea.Height));
+            var bottomWallBottomRight = new Point(rightWallTopLeft.X, bottomWallTopLeft.Y + wallWidth);
+            _bottomWall = new WallActor(bottomWallTopLeft, bottomWallBottomRight, Color.LightSlateGray);
+
+            LoadPlayer(bottomWallTopLeft.Y);
 
             _collisionManager.Register(_leftWall);
             _collisionManager.Register(_rightWall);
@@ -68,23 +72,25 @@ namespace Monocatch_Lib
             _projectileManager.Draw();
             _leftWall.Draw();
             _rightWall.Draw();
+            _bottomWall.Draw();
             _player.Draw();
         }
 
         private ActorBase _player;
         private ActorBase _leftWall;
         private ActorBase _rightWall;
+        private ActorBase _bottomWall;
         private ProjectileManager _projectileManager;
         private CollisionManager _collisionManager;
 
-        private void LoadPlayer()
+        private void LoadPlayer(int iBottomY)
         {
             var playArea = GraphicsHelper.GamePlayArea;
 
             var playerWidth = (int)(playArea.Width * SettingsManager.PlayerSettings.WidthAsFractionOfPlayAreaWidth);
             var playerHeight = (int)(playArea.Height * SettingsManager.PlayerSettings.HeightAsFractionOfPlayAreaHeight);
             var playerTopLeftX = (int)(playArea.X + playArea.Width / 2.0f - playerWidth / 2.0f);
-            var playerTopLeftY = (int)(playArea.Y + playArea.Height * SettingsManager.PlayerSettings.SpawnHeightAsFractionOfPlayAreaHeight - playerHeight / 2.0f);
+            var playerTopLeftY = iBottomY - playerHeight;
             _player = new PlayerActor(
                 new Vector2(playerTopLeftX, playerTopLeftY),
                 playerWidth,
