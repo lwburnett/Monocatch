@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using Microsoft.Xna.Framework;
 using Monocatch_Lib.Collision;
 
@@ -14,6 +15,7 @@ namespace Monocatch_Lib.Actors
             _rightXBound = iRightBound;
             _activePatterns = new List<ProjectilePatternBase>();
             _collisionManager = iCollisionManager;
+            _patternExpirationTime = null;
         }
 
         public void Update(GameTime iGameTime)
@@ -38,7 +40,14 @@ namespace Monocatch_Lib.Actors
 
             if (!isAtLeastOneSpawningPattern)
             {
-                _activePatterns.Add(new DefaultProjectilePattern(_startingHeight, _bottomBound, _leftXBound, _rightXBound, 10, _collisionManager));
+                if (!_patternExpirationTime.HasValue)
+                    _activePatterns.Add(new DefaultProjectilePattern(_startingHeight, _bottomBound, _leftXBound, _rightXBound, 10, _collisionManager));
+                else if (iGameTime.TotalGameTime - _patternExpirationTime.Value > SettingsManager.ProjectileManagerSettings.SpawningInterval)
+                {
+                    _activePatterns.Add(new DefaultProjectilePattern(_startingHeight, _bottomBound, _leftXBound, _rightXBound, 10, _collisionManager));
+                    _patternExpirationTime = null;
+                }
+
             }
 
             _activePatterns.ForEach(p => p.Update(iGameTime));
@@ -56,5 +65,6 @@ namespace Monocatch_Lib.Actors
         
         private readonly CollisionManager _collisionManager;
         private readonly List<ProjectilePatternBase> _activePatterns;
+        private TimeSpan? _patternExpirationTime;
     }
 }
