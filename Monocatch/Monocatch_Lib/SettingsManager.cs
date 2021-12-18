@@ -68,8 +68,6 @@ namespace Monocatch_Lib
 
         public static class ProjectileManagerSettings
         {
-            public const float MaxXSpeedOnSpawn = 100.0f;
-            public static TimeSpan SpawningInterval = TimeSpan.FromSeconds(2);
             public const float DespawnHeightAsFractionOfPlayAreaHeight = 1.05f;
             public const float SpawnHeightAsFractionOfPlayAreaHeight = .015f;
         }
@@ -78,6 +76,46 @@ namespace Monocatch_Lib
         {
             public const float ButtonWidthAsFractionOfPlayAreaWidth = .25f;
             public const float ButtonHeightAsFractionOfPlayAreaHeight = .075f;
+        }
+
+        public static class Patterns
+        {
+            public static class Default
+            {
+                public const int TotalNumGoodProjectiles = 50;
+                public const float MaxXSpeedOnSpawn = 100.0f;
+                public static TimeSpan SpawningInterval = TimeSpan.FromSeconds(2);
+                public const int NumEasyProjectiles = 25;
+                public const int NumMediumProjectiles = 15;
+                public const int NumHardProjectiles = 10;
+            }
+        }
+
+        public static class Projectiles
+        {
+            public static class Easy
+            {
+                public const int Radius = 8;
+                public static Color FillColor = Color.White;
+            }
+
+            public static class Medium
+            {
+                public const int Radius = 8;
+                public static Color FillColor = Color.Blue;
+            }
+
+            public static class Hard
+            {
+                public const int Radius = 8;
+                public static Color FillColor = Color.Gold;
+            }
+
+            public static class Bad
+            {
+                public const int Radius = 8;
+                public static Color FillColor = Color.OrangeRed;
+            }
         }
     }
 }

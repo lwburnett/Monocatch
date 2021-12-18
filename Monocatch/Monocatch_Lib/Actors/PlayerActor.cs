@@ -2,7 +2,6 @@
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Monocatch_Lib.Actors.Components;
-using Monocatch_Lib.Collision;
 
 namespace Monocatch_Lib.Actors
 {
@@ -44,7 +43,7 @@ namespace Monocatch_Lib.Actors
                 SignalJumpableCollisionToMovementComponent();
                 SetActorVelocity(new Vector2(-1.00f * GetActorVelocity().X, GetActorVelocity().Y));
             }
-            else if (iOtherActor is BasicProjectileActor)
+            else if (iOtherActor is GoodProjectileActorBase)
             {
                 SignalJumpableCollisionToMovementComponent();
             }

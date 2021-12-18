@@ -15,41 +15,12 @@ namespace Monocatch_Lib.Actors
             _rightXBound = iRightBound;
             _activePatterns = new List<ProjectilePatternBase>();
             _collisionManager = iCollisionManager;
-            _patternExpirationTime = null;
+
+            LoadPatterns();
         }
 
         public void Update(GameTime iGameTime)
         {
-            var isAtLeastOneSpawningPattern = false;
-            var ii = 0;
-            while (ii < _activePatterns.Count)
-            {
-                var thisPattern = _activePatterns[ii];
-
-                if (thisPattern.IsCompletelyFinished())
-                {
-                    _activePatterns.RemoveAt(ii);
-                    continue;
-                }
-
-                if (thisPattern.IsSpawning())
-                    isAtLeastOneSpawningPattern = true;
-
-                ii++;
-            }
-
-            if (!isAtLeastOneSpawningPattern)
-            {
-                if (!_patternExpirationTime.HasValue)
-                    _activePatterns.Add(new DefaultProjectilePattern(_startingHeight, _bottomBound, _leftXBound, _rightXBound, 10, _collisionManager));
-                else if (iGameTime.TotalGameTime - _patternExpirationTime.Value > SettingsManager.ProjectileManagerSettings.SpawningInterval)
-                {
-                    _activePatterns.Add(new DefaultProjectilePattern(_startingHeight, _bottomBound, _leftXBound, _rightXBound, 10, _collisionManager));
-                    _patternExpirationTime = null;
-                }
-
-            }
-
             _activePatterns.ForEach(p => p.Update(iGameTime));
         }
 
@@ -65,6 +36,11 @@ namespace Monocatch_Lib.Actors
         
         private readonly CollisionManager _collisionManager;
         private readonly List<ProjectilePatternBase> _activePatterns;
-        private TimeSpan? _patternExpirationTime;
+
+        private void LoadPatterns()
+        {
+            var defaultPattern = new DefaultProjectilePattern(_startingHeight, _bottomBound, _leftXBound, _rightXBound, _collisionManager);
+            _activePatterns.Add(defaultPattern);
+        }
     }
 }

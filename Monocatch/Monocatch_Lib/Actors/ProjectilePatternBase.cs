@@ -64,7 +64,9 @@ namespace Monocatch_Lib.Actors
         {
             switch (iProjectileActor)
             {
-                case BasicProjectileActor _:
+                case EasyProjectileActor _:
+                case MediumProjectileActor _:
+                case HardProjectileActor _:
                     _numGoodProjectilesSpawnedSoFar++;
                     _activeProjectiles.Add(iProjectileActor);
                     _collisionManager.Register(iProjectileActor);

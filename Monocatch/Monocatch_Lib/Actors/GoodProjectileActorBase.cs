@@ -1,19 +1,14 @@
 ﻿using System;
-using System.Diagnostics;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 
 namespace Monocatch_Lib.Actors
 {
-    public class BadProjectileActor : ProjectileActorBase
+    public class GoodProjectileActorBase : ProjectileActorBase
     {
-        public BadProjectileActor(Vector2 iPosition, Vector2 iVelocity) : 
-            base(iPosition, iVelocity, SettingsManager.BadProjectileSettings.Mass)
+        public GoodProjectileActorBase(Vector2 iPosition, Vector2 iVelocity, int iRadius, Color iColor) : base(iPosition, iVelocity, 1.0f)
         {
-            var radius = SettingsManager.Projectiles.Bad.Radius;
-            var color = SettingsManager.Projectiles.Bad.FillColor;
-
-            var diameter = 2 * radius;
+            var diameter = 2 * iRadius;
 
             var colorData = new Color[diameter * diameter];
 
@@ -22,10 +17,10 @@ namespace Monocatch_Lib.Actors
                 for (var yy = 0; yy < diameter; yy++)
                 {
                     var thisIndex = xx * diameter + yy;
-                    var distanceFromCenter = new Vector2(xx - radius, yy - radius);
+                    var distanceFromCenter = new Vector2(xx - iRadius, yy - iRadius);
 
-                    colorData[thisIndex] = Math.Abs(distanceFromCenter.Length()) < radius ?
-                        color : Color.Transparent;
+                    colorData[thisIndex] = Math.Abs(distanceFromCenter.Length()) < iRadius ?
+                        iColor : Color.Transparent;
                 }
             }
 

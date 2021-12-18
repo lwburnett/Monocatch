@@ -16,5 +16,20 @@ namespace Monocatch_Lib.Actors
         {
             AddForce(SettingsManager.WorldSettings.GravityForce);
         }
+
+        public override void OnCollision(ActorBase iOtherActor, GameTime iGameTime)
+        {
+            if (iOtherActor is PlayerActor)
+            {
+                IsCaught = true;
+            }
+            else if (iOtherActor is WallActor)
+            {
+                var currentVelocity = GetActorVelocity();
+                SetActorVelocity(new Vector2(-1.0f * currentVelocity.X, currentVelocity.Y));
+            }
+
+            base.OnCollision(iOtherActor, iGameTime);
+        }
     }
 }
