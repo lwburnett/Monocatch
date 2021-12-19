@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using Microsoft.Xna.Framework;
 using Monocatch_Lib.Collision;
 
@@ -41,6 +40,9 @@ namespace Monocatch_Lib.Actors
         {
             var defaultPattern = new DefaultProjectilePattern(_startingHeight, _bottomBound, _leftXBound, _rightXBound, _collisionManager);
             _activePatterns.Add(defaultPattern);
+
+            var badPattern = new DefaultBadProjectilePattern(_startingHeight, _bottomBound, _leftXBound, _rightXBound, _collisionManager);
+            _activePatterns.Add(badPattern);
         }
     }
 }

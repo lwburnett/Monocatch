@@ -9,13 +9,13 @@ namespace Monocatch_Lib.Actors
 {
     public abstract class ProjectilePatternBase
     {
-        protected ProjectilePatternBase(int iBottomBound, int iNumberOfGoodProjectilesToSpawn, CollisionManager iCollisionManager)
+        protected ProjectilePatternBase(int iBottomBound, int iNumberOfProjectilesToSpawn, CollisionManager iCollisionManager)
         {
             Debug.Assert(iBottomBound > 0);
-            Debug.Assert(iNumberOfGoodProjectilesToSpawn > 0);
+            Debug.Assert(iNumberOfProjectilesToSpawn > 0);
 
             _activeProjectiles = new List<ProjectileActorBase>();
-            _numGoodProjectilesToSpawn = iNumberOfGoodProjectilesToSpawn;
+            _numGoodProjectilesToSpawn = iNumberOfProjectilesToSpawn;
             _collisionManager = iCollisionManager;
             _bottomBound = iBottomBound;
         }

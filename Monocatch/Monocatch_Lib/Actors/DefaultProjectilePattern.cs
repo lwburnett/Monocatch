@@ -206,13 +206,13 @@ namespace Monocatch_Lib.Actors
             switch (iProjectileType)
             {
                 case ProjectileType.Easy:
-                    actor = new EasyProjectileActor(position, velocity);
+                    actor = new EasyProjectileActor(position, velocity + SettingsManager.Patterns.Default.EasyVerticalVelocityOnSpawn);
                     break;
                 case ProjectileType.Medium:
-                    actor = new MediumProjectileActor(position, velocity);
+                    actor = new MediumProjectileActor(position, velocity * SettingsManager.Patterns.Default.MediumVelocityHorizontalMultiplier + SettingsManager.Patterns.Default.MediumVerticalVelocityOnSpawn);
                     break;
                 case ProjectileType.Hard:
-                    actor = new HardProjectileActor(position, velocity);
+                    actor = new HardProjectileActor(position, velocity * SettingsManager.Patterns.Default.HardVelocityHorizontalMultiplier + SettingsManager.Patterns.Default.HardVerticalVelocityOnSpawn);
                     break;
                 default:
                     throw new ArgumentOutOfRangeException(nameof(iProjectileType), iProjectileType, null);

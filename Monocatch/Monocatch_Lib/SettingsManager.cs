@@ -77,12 +77,25 @@ namespace Monocatch_Lib
         {
             public static class Default
             {
-                public const int TotalNumGoodProjectiles = 50;
                 public const float MaxXSpeedOnSpawn = 100.0f;
                 public static TimeSpan SpawningInterval = TimeSpan.FromSeconds(2);
                 public const int NumEasyProjectiles = 25;
                 public const int NumMediumProjectiles = 15;
                 public const int NumHardProjectiles = 10;
+                public const int TotalNumGoodProjectiles = NumEasyProjectiles + NumMediumProjectiles + NumHardProjectiles;
+                public static Vector2 EasyVerticalVelocityOnSpawn = new Vector2(0.0f, 0.0f);
+                public static float MediumVelocityHorizontalMultiplier = 2.0f;
+                public static Vector2 MediumVerticalVelocityOnSpawn = new Vector2(0.0f, 10.0f);
+                public static float HardVelocityHorizontalMultiplier = 3.0f;
+                public static Vector2 HardVerticalVelocityOnSpawn = new Vector2(0.0f, 20.0f);
+            }
+
+            public class Bad
+            {
+                public const int TotalNumBadProjectiles = 25;
+                public const float MaxXSpeedOnSpawn = Default.MaxXSpeedOnSpawn;
+                public static TimeSpan SpawningInterval = TimeSpan.FromSeconds(Default.TotalNumGoodProjectiles * Default.SpawningInterval.TotalSeconds / TotalNumBadProjectiles);
+                public static float SpawningYSpeed = 5.0f;
             }
         }
 
