@@ -21,8 +21,8 @@ namespace Monocatch_Lib
                 public static class Ground
                 {
 
-                    public const float GlideFrictionXForce = 50.0f;
-                    public const float MovementXForce = 100.0f;
+                    public const float GlideFrictionXForce = 150.0f;
+                    public const float MovementXForce = 150.0f;
                     public const float TopXSpeed = 100.0f;
                     // ReSharper disable once InconsistentNaming
                     public static TimeSpan RecoveryTime = TimeSpan.FromSeconds(0);
@@ -34,19 +34,14 @@ namespace Monocatch_Lib
                 {
                     public const float JumpYVelocityMinimum = Ground.JumpYVelocity * .75f;
                     public static TimeSpan CollisionJumpTimeProximity = TimeSpan.FromMilliseconds(100);
-                    public const float PostJumpBonusHorizontalMovementForce = 150.0f;
-                    public const float PostJumpBonusHorizontalMovementTopSpeed = 125.0f;
+                    public const float PostJumpBonusHorizontalMovementForce = 200.0f;
+                    public const float PostJumpBonusHorizontalMovementTopSpeed = 145.0f;
                     public static TimeSpan PostJumpBonusTimeSpan = TimeSpan.FromSeconds(1.5);
                     public const float PostJumpBonusDecayForce = 100.0f;
                 }
 
                 public static TimeSpan BadCollisionRecovery = TimeSpan.FromSeconds(1);
             }
-        }
-
-        public static class BasicProjectileSettings
-        {
-            public const float Mass = 1.0f;
         }
 
         public static class BadProjectileSettings
