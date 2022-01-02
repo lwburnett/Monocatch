@@ -64,16 +64,16 @@ namespace Monocatch_Lib
             _idToScreenDictionary[_currentScreenId].OnNavigateTo();
         }
 
-        protected override void Update(GameTime gameTime)
+        protected override void Update(GameTime iGameTime)
         {
-            _gameTime = gameTime;
+            _gameTime = iGameTime;
 
-            _idToScreenDictionary[_currentScreenId].Update(gameTime);
+            _idToScreenDictionary[_currentScreenId].Update(iGameTime);
 
-            base.Update(gameTime);
+            base.Update(iGameTime);
         }
 
-        protected override void Draw(GameTime gameTime)
+        protected override void Draw(GameTime iGameTime)
         {
             GraphicsDevice.Clear(Color.Black);
 
@@ -81,16 +81,15 @@ namespace Monocatch_Lib
             _idToScreenDictionary[_currentScreenId].Draw();
             _spriteBatch.End();
 
-            base.Draw(gameTime);
+            base.Draw(iGameTime);
         }
 
         private void OnPlayGame()
         {
             var gameStart = _gameTime.TotalGameTime;
-            var gamePlayInstance = new GamePlayInstance(gameStart);
 
             _currentScreenId = ScreenId.GamePlay;
-            _idToScreenDictionary[_currentScreenId] = new GamePlayScreen(gamePlayInstance, OnExitGame);
+            _idToScreenDictionary[_currentScreenId] = new GamePlayScreen(gameStart, OnExitGame);
             _idToScreenDictionary[_currentScreenId].OnNavigateTo();
         }
 
@@ -102,7 +101,8 @@ namespace Monocatch_Lib
         private enum ScreenId
         {
             MainMenu,
-            GamePlay
+            GamePlay,
+            GamePlayPostStats
         }
     }
 }

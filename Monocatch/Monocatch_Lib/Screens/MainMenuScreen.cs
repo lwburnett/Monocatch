@@ -36,41 +36,8 @@ namespace Monocatch_Lib.Screens
             if (GamePad.GetState(PlayerIndex.One).Buttons.Back == ButtonState.Pressed || Keyboard.GetState().IsKeyDown(Keys.Escape))
                 _onExitCallback();
 
-            if (_playButton.IsOverlappingWithMouse(Mouse.GetState().Position))
-            {
-                _exitButton.Reset();
-
-                _playButton.OnOverlap();
-
-                if (Mouse.GetState().LeftButton == ButtonState.Pressed) 
-                    _playButton.OnPressed();
-                else if (Mouse.GetState().LeftButton == ButtonState.Released)
-                    _playButton.OnReleased();
-            }
-            else if (_exitButton.IsOverlappingWithMouse(Mouse.GetState().Position))
-            {
-                _playButton.Reset();
-
-                _exitButton.OnOverlap();
-
-                if (Mouse.GetState().LeftButton == ButtonState.Pressed)
-                    _exitButton.OnPressed();
-                else if (Mouse.GetState().LeftButton == ButtonState.Released)
-                    _exitButton.OnReleased();
-            }
-            else
-            {
-                if (Mouse.GetState().LeftButton == ButtonState.Released)
-                {
-                    _playButton.Reset();
-                    _exitButton.Reset();
-                }
-                else if (Mouse.GetState().LeftButton == ButtonState.Released)
-                {
-                    _playButton.OnNotOverlap();
-                    _exitButton.OnNotOverlap();
-                }
-            }
+            _playButton.Update(iGameTime);
+            _exitButton.Update(iGameTime);
         }
 
         public void Draw()
@@ -79,8 +46,8 @@ namespace Monocatch_Lib.Screens
             _exitButton.Draw();
         }
 
-        private UiTextButton _playButton;
-        private UiTextButton _exitButton;
+        private IUiElement _playButton;
+        private IUiElement _exitButton;
         private readonly Action _onPlayCallback;
         private readonly Action _onExitCallback;
 

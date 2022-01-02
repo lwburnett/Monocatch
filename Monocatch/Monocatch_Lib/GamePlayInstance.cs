@@ -10,9 +10,11 @@ namespace Monocatch_Lib
 {
     public class GamePlayInstance
     {
-        public GamePlayInstance(TimeSpan iGameStart)
+        public GamePlayInstance(TimeSpan iGameStart, Action iOnGamePlaySessionFinishedCallback)
         {
             _gameStart = iGameStart;
+            _playSessionHasFinished = false;
+            _onGamePlaySessionFinishedCallback = iOnGamePlaySessionFinishedCallback;
         }
 
         private readonly TimeSpan _gameStart;
@@ -28,7 +30,7 @@ namespace Monocatch_Lib
             var playAreaRight = gamePlayArea.X + gamePlayArea.Width - wallWidth;
             var bottomBound = (int)(gamePlayArea.Height * SettingsManager.ProjectileManagerSettings.DespawnHeightAsFractionOfPlayAreaHeight);
             var spawningHeight = (int)(gamePlayArea.Height * SettingsManager.ProjectileManagerSettings.SpawnHeightAsFractionOfPlayAreaHeight);
-            _projectileManager = new ProjectileManager(spawningHeight, bottomBound, playAreaLeft, gamePlayArea.X + gamePlayArea.Width - wallWidth, _collisionManager);
+            _projectileManager = new ProjectileManager(spawningHeight, bottomBound, playAreaLeft, gamePlayArea.X + gamePlayArea.Width - wallWidth, _collisionManager, OnProjectilesDoneSpawning);
 
             var leftWallTopLeft = new Point(gamePlayArea.X, 0);
             var leftWallBottomRight = new Point(playAreaLeft, gamePlayArea.Height);
@@ -53,10 +55,13 @@ namespace Monocatch_Lib
 
         public void Update(GameTime iGameTime)
         {
-            HandleInput(iGameTime);
+            if (_playSessionHasFinished) 
+                return;
+
+            HandleInput();
 
             var adjustedGameTime = new GameTime(
-                iGameTime.TotalGameTime - _gameStart, 
+                iGameTime.TotalGameTime - _gameStart,
                 iGameTime.ElapsedGameTime,
                 iGameTime.IsRunningSlowly);
 
@@ -82,6 +87,8 @@ namespace Monocatch_Lib
         private ActorBase _bottomWall;
         private ProjectileManager _projectileManager;
         private CollisionManager _collisionManager;
+        private bool _playSessionHasFinished;
+        private readonly Action _onGamePlaySessionFinishedCallback;
 
         private void LoadPlayer(int iBottomY)
         {
@@ -106,7 +113,7 @@ namespace Monocatch_Lib
         }
 
         // Using this in place of a player controller because of this game's simplicity
-        private void HandleInput(GameTime iGameTime)
+        private void HandleInput()
         {
             var playerMovementComponent = _player.GetComponentByType<PlayerMovementComponent>();
 
@@ -134,6 +141,12 @@ namespace Monocatch_Lib
             }
 
             playerMovementComponent.IntendRightAction();
+        }
+
+        private void OnProjectilesDoneSpawning()
+        {
+            _playSessionHasFinished = true;
+            _onGamePlaySessionFinishedCallback();
         }
     }
 }

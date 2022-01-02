@@ -73,6 +73,12 @@ namespace Monocatch_Lib
             public const float ButtonHeightAsFractionOfPlayAreaHeight = .075f;
         }
 
+        public static class PostSessionStatsSettings
+        {
+            public const float ButtonWidthAsFractionOfPlayAreaWidth = .30f;
+            public const float ButtonHeightAsFractionOfPlayAreaHeight = .075f;
+        }
+
         public static class Patterns
         {
             public static class Default

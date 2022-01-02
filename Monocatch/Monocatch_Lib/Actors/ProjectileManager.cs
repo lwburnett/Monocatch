@@ -1,4 +1,6 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
 using Microsoft.Xna.Framework;
 using Monocatch_Lib.Collision;
 
@@ -6,7 +8,7 @@ namespace Monocatch_Lib.Actors
 {
     public class ProjectileManager
     {
-        public ProjectileManager(int iStartingHeight, int iBottomBound, int iLeftBound, int iRightBound, CollisionManager iCollisionManager)
+        public ProjectileManager(int iStartingHeight, int iBottomBound, int iLeftBound, int iRightBound, CollisionManager iCollisionManager, Action iOnFinishedSpawningAction)
         {
             _startingHeight = iStartingHeight;
             _bottomBound = iBottomBound;
@@ -14,18 +16,22 @@ namespace Monocatch_Lib.Actors
             _rightXBound = iRightBound;
             _activePatterns = new List<ProjectilePatternBase>();
             _collisionManager = iCollisionManager;
+            _finishedSpawningCallback = iOnFinishedSpawningAction;
 
             LoadPatterns();
         }
 
         public void Update(GameTime iGameTime)
         {
-            _activePatterns.ForEach(p => p.Update(iGameTime));
+            _activePatterns.ForEach(iP => iP.Update(iGameTime));
+
+            if (_activePatterns.All(iP => iP.IsCompletelyFinished())) 
+                _finishedSpawningCallback();
         }
 
         public void Draw()
         {
-            _activePatterns.ForEach(p => p.Draw());
+            _activePatterns.ForEach(iP => iP.Draw());
         }
 
         private readonly int _startingHeight;
@@ -35,6 +41,7 @@ namespace Monocatch_Lib.Actors
         
         private readonly CollisionManager _collisionManager;
         private readonly List<ProjectilePatternBase> _activePatterns;
+        private readonly Action _finishedSpawningCallback;
 
         private void LoadPatterns()
         {

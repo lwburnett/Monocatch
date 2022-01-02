@@ -15,24 +15,20 @@ namespace Monocatch_Lib.Actors
             Debug.Assert(iNumberOfProjectilesToSpawn > 0);
 
             _activeProjectiles = new List<ProjectileActorBase>();
-            _numGoodProjectilesToSpawn = iNumberOfProjectilesToSpawn;
+            _numProjectilesToSpawn = iNumberOfProjectilesToSpawn;
             _collisionManager = iCollisionManager;
             _bottomBound = iBottomBound;
         }
 
-        public bool IsSpawning()
-        {
-            return _numGoodProjectilesSpawnedSoFar < _numGoodProjectilesToSpawn;
-        }
-
         public bool IsCompletelyFinished()
         {
-            return !_activeProjectiles.Any();
+            return _numProjectilesSpawnedSoFar >= _numProjectilesToSpawn && 
+                   !_activeProjectiles.Any();
         }
 
         public void Update(GameTime iGameTime)
         {
-            if (_numGoodProjectilesSpawnedSoFar < _numGoodProjectilesToSpawn)
+            if (_numProjectilesSpawnedSoFar < _numProjectilesToSpawn)
                 SpawnNewProjectilesIfNeeded(iGameTime);
 
             var ii = 0;
@@ -55,7 +51,7 @@ namespace Monocatch_Lib.Actors
 
         public void Draw()
         {
-            _activeProjectiles.ForEach(p => p.Draw());
+            _activeProjectiles.ForEach(iP => iP.Draw());
         }
 
         protected abstract void SpawnNewProjectilesIfNeeded(GameTime iGameTime);
@@ -64,14 +60,13 @@ namespace Monocatch_Lib.Actors
         {
             switch (iProjectileActor)
             {
-                case EasyProjectileActor _:
-                case MediumProjectileActor _:
-                case HardProjectileActor _:
-                    _numGoodProjectilesSpawnedSoFar++;
+                case GoodProjectileActorBase _:
+                    _numProjectilesSpawnedSoFar++;
                     _activeProjectiles.Add(iProjectileActor);
                     _collisionManager.Register(iProjectileActor);
                     break;
                 case BadProjectileActor _:
+                    _numProjectilesSpawnedSoFar++;
                     _activeProjectiles.Add(iProjectileActor);
                     _collisionManager.Register(iProjectileActor);
                     break;
@@ -82,10 +77,10 @@ namespace Monocatch_Lib.Actors
         }
 
         private readonly List<ProjectileActorBase> _activeProjectiles;
-        private readonly int _numGoodProjectilesToSpawn;
+        private readonly int _numProjectilesToSpawn;
         private readonly CollisionManager _collisionManager;
 
-        private int _numGoodProjectilesSpawnedSoFar;
+        private int _numProjectilesSpawnedSoFar;
         private readonly int _bottomBound;
     }
 }

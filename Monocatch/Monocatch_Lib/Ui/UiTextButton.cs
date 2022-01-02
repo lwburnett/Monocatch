@@ -1,10 +1,11 @@
 ﻿using System;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
+using Microsoft.Xna.Framework.Input;
 
 namespace Monocatch_Lib.Ui
 {
-    public class UiTextButton
+    public class UiTextButton : IUiElement
     {
         public UiTextButton(Point iTopLeft, int iWidth, int iHeight, string iText, Action iOnClickedCallback)
         {
@@ -71,6 +72,30 @@ namespace Monocatch_Lib.Ui
             _isOverlapped = false;
         }
 
+        public void Update(GameTime iGameTime)
+        {
+            if (IsOverlappingWithMouse(Mouse.GetState().Position))
+            {
+                OnOverlap();
+
+                if (Mouse.GetState().LeftButton == ButtonState.Pressed)
+                    OnPressed();
+                else if (Mouse.GetState().LeftButton == ButtonState.Released)
+                    OnReleased();
+            }
+            else
+            {
+                if (Mouse.GetState().LeftButton == ButtonState.Released)
+                {
+                    Reset();
+                }
+                else if (Mouse.GetState().LeftButton == ButtonState.Released)
+                {
+                    OnNotOverlap();
+                }
+            }
+        }
+
         public void Draw()
         {
             if (!_isOverlapped && !_isPressed)
@@ -82,7 +107,7 @@ namespace Monocatch_Lib.Ui
 
             const float scaling = 1.0f;
             var stringDimensions = _textFont.MeasureString(_text) * scaling;
-            GraphicsHelper.DrawString(_textFont, _text, new Vector2(_topLeft.X + (_width - stringDimensions.X) / 2f, _topLeft.Y + (_height - stringDimensions.Y) / 2f), Color.Black, scaling);
+            GraphicsHelper.DrawString(_textFont, _text, new Vector2(_topLeft.X + (_width - stringDimensions.X) / 2f, _topLeft.Y + (_height - stringDimensions.Y) / 2f), Color.Black);
         }
 
         private Point _topLeft;
