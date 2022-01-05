@@ -2,16 +2,17 @@
 using System.Diagnostics;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Input;
-using Monocatch_Lib.Actors.Components;
 
 namespace Monocatch_Lib.Screens
 {
     public class GamePlayScreen : IScreen
     {
-        public GamePlayScreen(TimeSpan iGameTime, Action iOnExitCallback)
+        public GamePlayScreen(TimeSpan iGameTime, Action iOnPlayAgainCallback, Action iOnMainMenuCallback, Action iOnExitCallback)
         {
             _gamePlayInstance = new GamePlayInstance(iGameTime, OnGamePlaySessionFinished);
             _onExitCallback = iOnExitCallback;
+            _onPlayAgainCallback = iOnPlayAgainCallback;
+            _onMainMenuCallback = iOnMainMenuCallback;
             _subScreen = SubScreen.GamePlay;
         }
 
@@ -57,6 +58,8 @@ namespace Monocatch_Lib.Screens
         }
 
         private readonly Action _onExitCallback;
+        private readonly Action _onPlayAgainCallback;
+        private readonly Action _onMainMenuCallback;
         private readonly GamePlayInstance _gamePlayInstance;
         private SubScreen _subScreen;
         private IScreen _postSessionStatsScreen;
@@ -70,12 +73,12 @@ namespace Monocatch_Lib.Screens
 
         private void OnMainMenu()
         {
-            throw new NotImplementedException();
+            _onMainMenuCallback();
         }
 
         private void OnPlayAgain()
         {
-            throw new NotImplementedException();
+            _onPlayAgainCallback();
         }
 
         private enum SubScreen
